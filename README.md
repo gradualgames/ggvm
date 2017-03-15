@@ -1,7 +1,6 @@
-****************************************************************
-*GGVm Guide
-*by Derek Andrews <gradualgames@gmail.com>
-****************************************************************
+# GGVm Guide
+### by Derek Andrews <gradualgames@gmail.com>
+***
 
 GGVm is a porting layer for NES homebrew games. It's similar to
 an emulator, but a small amount of customization needs to be done
@@ -20,26 +19,23 @@ fps with little or no stuttering even on somewhat old Android
 devices. Please read the feature list below to get an idea of
 what GGVm's capabilities are.
 
-****************************************************************
-*Project goals
-****************************************************************
+# Project goals
+***
 
-Port - Provide as little of the NES hardware as possible for as
+- Port - Provide as little of the NES hardware as possible for as
 much performance on as many devices as possible, requiring some
 work on the part of the developer.
 
-Package - Your game can be distributed as a Jar, a Jar+JRE, an
+- Package - Your game can be distributed as a Jar, a Jar+JRE, an
 APK, or an IPA.
 
-Protect - You can omit the iNES header, and remove your sound
+- Protect - You can omit the iNES header, and remove your sound
 engine implementation from your game ROM (your soundtrack will
 be played as ogg, mp3 or wav files) Any casual hackers who
 successfully fill in your iNES header and run your game in an
 emulator will have wasted their time---no sound.
 
-****************************************************************
-*License
-****************************************************************
+# License
 
 The license is in LICENSE in the root directory and is
 The Unlicense. See unlicense.org.
@@ -48,130 +44,117 @@ There is a second license, license.txt, in assets/dushlan which
 is the BSD license, and applies only to the Dushlan binary and
 assets.
 
-****************************************************************
-*Credits:
-*
-*Derek Andrews - Author of GGVm
-*
-*Justin Mullin - For telling me about LibGDX and helping me
-*come up with a way to imitate a palettized graphics mode using
-*a fragment shader, as well as advice about performance.
-*
-*LibGDX (https://libgdx.badlogicgames.com/) - The cross plat-
-*form game Java game development library used to develop GGVm.
-*
-*Peter McQuillan - Creator of Dúshlán, an open source game for
-*the NES, used to demonstrate GGVm. See
-*https://github.com/soiaf/Dushlan for more information. BSD
-*license for his binary included in assets/dushlan/license.txt.
-*
-*Brad Smith (rainwarrior) - For inspiring me to come up with a
-*way to get my games on Steam.
-*
-*Greg Caldwell - For inspiring me to come up with a way to get
-*my games on Steam.
-*
-*Adam Welch (dra600n) - For being the first guinea pig to use
-*GGVm for a digitally distributed NES game besides our own
-*titles.
-*
-*Rob Bryant (Roth) - For helping with Adam Welch's Get 'em Gary
-*GGVm release.
-*
-*Joe Granato - For also inspiring me to think big and get my
-*games out there, for extensive use of GGVm which prodded me to
-*make many improvements, and finally for free publicity for
-*GGVm (as well as other Gradual Games' efforts).
-*
-*Kevin Hanley (KHAN Games) - For testing an iOS build of his
-*game, The Incident, on his iPad.
-*
-*Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
-*to GGVm. Also for inspiring me to work really hard on
-*performance issues on mobile devices.
-*
-****************************************************************
+# Credits
+***
 
-****************************************************************
-*Changes:
+* Derek Andrews - Author of GGVm
+
+* Justin Mullin - For telling me about LibGDX and helping me come up with a way to imitate a palettized graphics mode using a fragment shader, as well as advice about performance.
+
+* LibGDX (https://libgdx.badlogicgames.com/) - The cross plat-form game Java game development library used to develop GGVm.
+
+* Peter McQuillan - Creator of Dúshlán, an open source game for the NES, used to demonstrate GGVm. See https://github.com/soiaf/Dushlan for more information. BSD license for his binary included in assets/dushlan/license.txt.
+
+* Brad Smith (rainwarrior) - For inspiring me to come up with a way to get my games on Steam.
+
+* Greg Caldwell - For inspiring me to come up with a way to get my games on Steam.
+
+* Adam Welch (dra600n) - For being the first guinea pig to use
+GGVm for a digitally distributed NES game besides our own
+titles.
+
+* Rob Bryant (Roth) - For helping with Adam Welch's Get 'em Gary
+GGVm release.
+
+* Joe Granato - For also inspiring me to think big and get my
+games out there, for extensive use of GGVm which prodded me to
+make many improvements, and finally for free publicity for
+GGVm (as well as other Gradual Games' efforts).
+
+* Kevin Hanley (KHAN Games) - For testing an iOS build of his
+game, The Incident, on his iPad.
+
+* Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
+to GGVm. Also for inspiring me to work really hard on
+performance issues on mobile devices.
+
+# Changes
+***
+
 * 3-12-17: Created first version of GGVM README.txt file.
-****************************************************************
 
-****************************************************************
-*Dependencies:
-****************************************************************
+# Dependencies
+***
 
-Java Runtime:
+- Java Runtime:
 You will need this to use GGVm's build system, Gradle.
 
-Java Development Kit:
+- Java Development Kit:
 I have been building with JDK 1.8 with no issues, but you should
 be able to use a JDK as old as 1.6 with LibGDX.
 
-Android SDK:
+- Android SDK:
 You will need this to build for Android.
 
-XCode:
+- XCode:
 You will need this to build for iOS.
 
-****************************************************************
-*Features and Limitations:
-****************************************************************
+# Features and Limitations
+***
 
--Smooth 60fps play on pc systems up to ~8 years old and on
+- Smooth 60fps play on pc systems up to ~8 years old and on
 Android phones and tablets up to ~3 years old that I have
 tested. As of this writing, iOS confirmed working well.
 
--No input lag added beyond latency already present in the
+- No input lag added beyond latency already present in the
 controller subsystem.
 
--Games must not rely on CPU for timing, only nmi (for example,
+- Games must not rely on CPU for timing, only nmi (for example,
  Dushlan had used cpu for gameplay timing---I modified it to
  use nmis instead)
 
--6502 cpu core. Only write your game ONCE, for the NES!
+- 6502 cpu core. Only write your game ONCE, for the NES!
 
--No real PPU emulation. Adapters must be coded for raster
+- No real PPU emulation. Adapters must be coded for raster
  effects, per-game. (a couple hours' work)
 
--No real APU emulation. Adapters must be coded per-game, which
+- No real APU emulation. Adapters must be coded per-game, which
  play OGG files when sound engine routines are called. (a couple hours' work)
 
--Background sprites may partially hide foreground sprites,
+- Background sprites may partially hide foreground sprites,
  assuming bg sprites are solid 8x8 squares of pixels.
 
--You can leave out the iNES header and configure from GGVM,
+- You can leave out the iNES header and configure from GGVM,
 which discourages someone from extracting your rom.
 
--Due to coding audio adapter, you can gut sound-engine. Thus
+- Due to coding audio adapter, you can gut sound-engine. Thus
  if anyone extracts your ROM, it'll have no audio and they
  wasted their time.
 
--Mapper 0 and 2 supported, 4 coming soon
+- Mapper 0 and 2 supported, 4 coming soon
 
--CHR-RAM supported during transitions. Live updates during
+- CHR-RAM supported during transitions. Live updates during
  gameplay are not supported.
 
--No undocumented cpu opcodes supported yet, but can add support
+- No undocumented cpu opcodes supported yet, but can add support
 
--Automatic save/restore state
+- Automatic save/restore state
 
--Controller configuration for XBOX 360 and Retrousb controllers,
+- Controller configuration for XBOX 360 and Retrousb controllers,
  manual config for others
 
--Windowed or fullscreen mode
+- Windowed or fullscreen mode
 
-****************************************************************
-*Supported platforms
-****************************************************************
+# Supported platforms
+***
 
 Games can be packaged up for the following platforms:
 
--Windows
--Mac
--Linux
--Android
--iOS
+- Windows
+- Mac
+- Linux
+- Android
+- iOS
 
 LibGDX is also capable of using GWT to compile and run in a
 web browser. I have not tested GGVm with this and I have no
@@ -179,9 +162,8 @@ personal interest in distributing for web. But if anybody
 expresses interest maybe I'll try to get that up and running
 eventually.
 
-****************************************************************
-*Setting up local.properties
-****************************************************************
+# Setting up local.properties
+***
 
 The local.properties file is used to configure the build for all
 platforms. local.properties.example has been provided for you to
@@ -190,9 +172,8 @@ The GGVm snapshot contains a rom and assets for Dushlan, an open
 source NES game, to demo GGVm. Without a game and associated
 java classes, GGVm will fail to build.
 
-****************************************************************
-*GGVm's build system
-****************************************************************
+# GGVm's build system
+***
 
 GGVm uses Gradle, a self-bootstrapping build system which uses
 Groovy. On Windows based machines, you can invoke all build
@@ -215,9 +196,8 @@ For the rest of this document, for brevity I will be typing the
 *nix style of invocation, so please keep this in mind if you are
 on a Windows machine.
 
-****************************************************************
-*Naming and case sensitivity
-****************************************************************
+# Naming and case sensitivity
+***
 
 Note that GGVm's build system is case sensitive. Your assets
 directory must be all lowercase. But all other instances of your
@@ -227,9 +207,8 @@ class that Dushlan needs MUST have the exact string Dushlan in
 the name, or your build will fail. Please keep this in mind
 through the rest of this document.
 
-****************************************************************
-*The assets directory
-****************************************************************
+# The assets directory
+***
 
 The assets directory is where you place subdirectories for each
 game you want to wrap up with ggvm, each which contain the game
@@ -281,9 +260,8 @@ that you absolutely MUST have in your assets directory to build
 your game. It fully configures GGVm with all dependencies
 required to run your game.
 
-****************************************************************
-*Building a game for PC
-****************************************************************
+# Building a game for PC
+***
 
 To run the currently configured game (see section about the
 local.properties file) on PC, type:
@@ -318,9 +296,8 @@ machines at the moment.
 distPackrIcon is what typically will be used for a full Windows
 PC release, say for Steam.
 
-****************************************************************
-*Building a game for Android
-****************************************************************
+# Building a game for Android
+***
 
 To run the currently configured game (see section about the
 local.properties file) on Android, type:
@@ -337,9 +314,8 @@ on how to build a release version of an Android APK. If you are
 familiar with Android already, you might not have much trouble
 getting this to work without help from this file.
 
-****************************************************************
-*Building a game for iOS
-****************************************************************
+# Building a game for iOS
+***
 
 NOTE: As of the first writing of this document, iOS builds are
 highly experimental. I have seen them run in a simulator, and
@@ -348,9 +324,8 @@ process of getting an App Store license so that I can firm up
 the iOS build. Then I will be updating this section with
 instructions.
 
-****************************************************************
-*Instructions for creating a custom GameModule
-****************************************************************
+# Instructions for creating a custom GameModule
+***
 
 Any game you build with GGVm MUST have its own extension of the
 GameModule class. For example, Dushlan has the following file:
@@ -372,18 +347,19 @@ instead, to help discourage casual hackers from pulling your rom
 out of the distributed game and using it in an emulator. Here is
 an example:
 
+```
     @Override
     public Cartridge provideCartridge(byte[] bytes) {
         return new Cartridge(32, 0, 2, Cartridge.MIRRORING_MODE_VERTICAL, bytes);
     }
+```
 
 This configures the cartridge for 32 prg roms, 0 chr roms,
 mapper 2, and vertical mirroring. Thus, the iNES header will be
 ignored and can be removed from the ROM.
 
-****************************************************************
-*An example, totally blank GameModule.
-****************************************************************
+# An example, totally blank GameModule.
+***
 
 To help you get your own game running in GGVm, here is a
 complete, but totally blank GameModule class. Note that this
@@ -399,7 +375,7 @@ mirroring rendering manager (see below), your game should run,
 without sound. See above sections for instructions on building
 and running your game on your desired platform.
 
-
+```
 package com.gradualgames.module;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -485,11 +461,9 @@ public class MyTitleGameModule implements GameModule {
         };
     }
 }
-
-
-****************************************************************
-*Instructions for creating a custom SoundtrackManager
-****************************************************************
+```
+# Instructions for creating a custom SoundtrackManager
+***
 
 A gamemodule must at least provide an anonymous inner class
 with a no-op SoundtrackManager extension, as shown in the
@@ -563,9 +537,8 @@ back. GGVm supports most typical scenarios in use for NES
 homebrew games, but a highly advanced sound system may be
 difficult or impossible to fully replicate.
 
-****************************************************************
-*Instructions for creating a custom RasterEffectManager
-****************************************************************
+# Instructions for creating a custom RasterEffectManager
+***
 
 This is a largely experimental area of GGVm. The original idea
 of RasterEffectManager was to be able to support scanline based
@@ -589,9 +562,8 @@ my current game, so I will be diving into this at some point in
 the future. I'm also open to contributions if anybody wants to
 dive in to this.
 
-****************************************************************
-*Instructions for creating an NmiSafeFunctor
-****************************************************************
+# Instructions for creating an NmiSafeFunctor
+***
 
 These are optional, but often are very helpful for making sure
 a game is stable in GGVm. Since GGVm makes no attempt whatsoever
@@ -609,10 +581,12 @@ ranges will be standard nmi wait loops. Typically nmi wait loops
 involve a counter that is incremented from nmi, and then a loop
 in the main loop of the game that looks something like this:
 
+```
     lda nmi_counter
 :
     cmp nmi_counter
     beq :-
+```
 
 The NmiSafeFunctor must check to see whether the program counter
 is inside one of these wait loops. This is always used right
@@ -624,7 +598,7 @@ long. You can usually get a listing from your assembler to help
 you find the address range that these loops occupy. Then your
 NmiSafeFunctor might look something like this (for a game that
 has two such loops):
-
+```
     @Override
     public NmiSafeFunctor provideNmiSafeFunctor() {
         return new NmiSafeFunctor() {
@@ -634,6 +608,6 @@ has two such loops):
             }
         };
     }
-
+```
 See? Not too bad. And now a whole class of nmi related bugs your
 game may have exhibited in ggvm cannot happen.
