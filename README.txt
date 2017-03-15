@@ -95,8 +95,6 @@ tested. As of this writing, iOS confirmed working well.
 -No input lag added beyond latency already present in the
 controller subsystem.
 
--Games must separate drawing in nmi from logic in main loop.
-
 -Games must not rely on CPU for timing, only nmi (for example,
  Dushlan had used cpu for gameplay timing---I modified it to
  use nmis instead)
