@@ -32,6 +32,11 @@ what GGVm's capabilities are.
 *LibGDX (https://libgdx.badlogicgames.com/) - The cross plat-
 *form game Java game development library used to develop GGVm.
 *
+*Peter McQuillan - Creator of Dúshlán, an open source game for
+*the NES, used to demonstrate GGVm. See
+*https://github.com/soiaf/Dushlan for more information. BSD
+*license for his binary included in assets/dushlan/license.txt.
+*
 *Brad Smith (rainwarrior) - For inspiring me to come up with a
 *way to get my games on Steam.
 *
