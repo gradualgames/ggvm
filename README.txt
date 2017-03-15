@@ -13,9 +13,12 @@ without having to pay anybody or ask for permission.
 GGVm supports a subset of the NES's full capabilities. This
 subset was chosen to support the needs of most of today's
 homebrew developers. This enabled us to complete the project
-quickly enough to return to creating homebrew games, as a real
-emulator would take much more effort. Please read the feature
-list below to get an idea of what GGVm's capabilities are.
+quickly enough to return to creating homebrew games. In
+addition, this allowed us to take large shortcuts in how the
+system is emulated, which enables games to run smoothly at 60
+fps with little or no stuttering even on somewhat old Android
+devices. Please read the feature list below to get an idea of
+what GGVm's capabilities are.
 
 ****************************************************************
 *Credits:
