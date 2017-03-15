@@ -69,6 +69,9 @@ build/
 .DS_Store
 Thumbs.db
 
+## Game asset folders
+assets/
+
 ## Game asset folders temporarily copied to android/assets
 android/assets
 
