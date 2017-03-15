@@ -69,7 +69,9 @@ assets.
 *Kevin Hanley (KHAN Games) - For testing an iOS build of his
 *game, The Incident, on his iPad.
 *
-*Shiru - For bug reports and pointing Joe Granato to GGVm.
+*Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
+*to GGVm. Also for inspiring me to work really hard on
+*performance issues on mobile devices.
 *
 ****************************************************************
 
