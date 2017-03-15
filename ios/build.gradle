@@ -1,0 +1,58 @@
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def game = properties.getProperty('game')
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+sourceCompatibility = '1.7'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+ext {
+	mainClassName = "com.gradualgames.ggvm.IOSLauncher"
+}
+
+task deleteFiles {
+    delete "../ios/src/com/gradualgames/ggvm/GameModuleProvider.java"
+    FileTree tree = fileTree(dir: '../android/assets/')
+    tree.exclude '**/font*'
+    tree.exclude '**/palette*'
+    tree.exclude '**/shaders*'
+    delete tree
+    tree.visit { FileVisitDetails details ->
+        if (details.file.isDirectory() &&
+                details.file.name != "font" &&
+                details.file.name != "palette" &&
+                details.file.name != "shaders") {
+            delete details.file.path
+        }
+    }
+}
+
+task copyFiles(type: Copy) {
+    from "../assets/" + game.toLowerCase()
+    into "../android/assets/" + game.toLowerCase()
+}
+
+task generateSources {
+    def gameModule = game + "GameModule"
+    def outputDir = file("$projectDir/src/com/gradualgames/ggvm/")
+    outputs.dir outputDir
+    outputs.upToDateWhen { false }
+    doFirst {
+        outputDir.exists() || outputDir.mkdirs()
+        String GAME_MODULE = "public static GameModule provideGameModule() { return new " + gameModule + "(); }";
+        new File(outputDir, "GameModuleProvider.java").write("package com.gradualgames.ggvm;import com.gradualgames.module.GameModule;import com.gradualgames.module." + gameModule + ";\n\npublic class GameModuleProvider {\n" + "    " + GAME_MODULE + "}")
+    }
+}
+
+compileJava.dependsOn generateSources
+build.dependsOn copyFiles
+launchIPhoneSimulator.dependsOn build
+launchIPadSimulator.dependsOn build
+launchIOSDevice.dependsOn build
+createIPA.dependsOn build
+
+eclipse.project {
+    name = appName + "-ios"
+    natures 'org.robovm.eclipse.RoboVMNature'
+}

@@ -1,0 +1,41 @@
+#****************************************************************
+#This file is necessary for configuring GGVm to build a
+#particular game. It must be renamed as local.properties. All
+#of the values of the below variables are specific to my machine,
+#please replace each of them with paths to the same sdks/jdks/
+#utilities present on your own system.
+#****************************************************************
+
+#The game rom/asset directory to use. Must be case-sensitive and match all game specific classes.
+#This variable must be specified or ggvm will fail to configure the build.
+
+game=Dushlan
+
+#Location of the Android SDK. This must be present if you are building for the Android platform.
+#To completely disable the Android build, you will have to remove it from settings.gradle and
+#from build.gradle.
+
+sdk.dir=C:/Users/derek/AppData/Local/Android/sdk
+
+#****************************************************************
+#The following variables are only used when using the distPackr
+#and distPackrIcon tasks for Desktop builds.
+#****************************************************************
+
+#Platform for which we are building. Must be matched with corresponding JDK above.
+platform=windows64
+
+#Location of Packr utility
+packr=C:/Program Files/libgdx/packr.jar
+
+#Location of Resource Hacker utility
+resourceHacker=C:/Program Files (x86)/Resource Hacker/ResourceHacker.exe
+
+#Location of JDK for using Packr to create distributable binary builds
+jdk=C:/Users/derek/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-windows-amd64-image.zip
+#jdk=C:/Users/derek/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-windows-i586-image.zip
+#jdk=C:/Users/derek/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-linux-amd64-image.zip
+#jdk=C:/Users/derek/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-linux-i586-image.zip
+#jdk=C:/Users/derek/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-macosx-x86_64-image.zip
+#jdk=C:/Users/derek/Dropbox/NES/JDK/jdk1.7.0_79.zip
+#jdk=/Users/dandrews/Dropbox/NES/JDK/openjdk-1.7.0-u80-unofficial-windows-amd64-image.zip
