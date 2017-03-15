@@ -31,6 +31,7 @@ task deleteFiles {
 task copyFiles(type: Copy) {
     from "../assets/" + game.toLowerCase()
     into "../android/assets/" + game.toLowerCase()
+    exclude '**/src/**'
 }
 
 task generateSources {
