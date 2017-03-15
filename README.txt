@@ -68,22 +68,6 @@ what GGVm's capabilities are.
 ****************************************************************
 
 ****************************************************************
-*Introduction:
-****************************************************************
-
-This guide explains how to use GGVm and associated tools. The
-distribution comes with the following:
-
-README.txt:
-You're reading it.
-
-LICENSE:
-A file stating that GGVm is public domain and you may do
-anything you like with it. I'd appreciate credit, but other than
-that courtesy I do not require you do anything else, and feel
-free to sell anything you make using it.
-
-****************************************************************
 *Dependencies:
 ****************************************************************
 
