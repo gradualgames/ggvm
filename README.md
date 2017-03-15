@@ -1,6 +1,5 @@
 # GGVm Guide
 ### by Derek Andrews <gradualgames@gmail.com>
-***
 
 GGVm is a porting layer for NES homebrew games. It's similar to
 an emulator, but a small amount of customization needs to be done
@@ -20,7 +19,6 @@ devices. Please read the feature list below to get an idea of
 what GGVm's capabilities are.
 
 # Project goals
-***
 
 - Port - Provide as little of the NES hardware as possible for as
 much performance on as many devices as possible, requiring some
@@ -45,7 +43,6 @@ is the BSD license, and applies only to the Dushlan binary and
 assets.
 
 # Credits
-***
 
 * Derek Andrews - Author of GGVm
 
@@ -79,12 +76,10 @@ to GGVm. Also for inspiring me to work really hard on
 performance issues on mobile devices.
 
 # Changes
-***
 
 * 3-12-17: Created first version of GGVM README.txt file.
 
 # Dependencies
-***
 
 - Java Runtime:
 You will need this to use GGVm's build system, Gradle.
@@ -100,7 +95,6 @@ You will need this to build for Android.
 You will need this to build for iOS.
 
 # Features and Limitations
-***
 
 - Smooth 60fps play on pc systems up to ~8 years old and on
 Android phones and tablets up to ~3 years old that I have
@@ -146,7 +140,6 @@ which discourages someone from extracting your rom.
 - Windowed or fullscreen mode
 
 # Supported platforms
-***
 
 Games can be packaged up for the following platforms:
 
@@ -163,7 +156,6 @@ expresses interest maybe I'll try to get that up and running
 eventually.
 
 # Setting up local.properties
-***
 
 The local.properties file is used to configure the build for all
 platforms. local.properties.example has been provided for you to
@@ -173,7 +165,6 @@ source NES game, to demo GGVm. Without a game and associated
 java classes, GGVm will fail to build.
 
 # GGVm's build system
-***
 
 GGVm uses Gradle, a self-bootstrapping build system which uses
 Groovy. On Windows based machines, you can invoke all build
@@ -197,7 +188,6 @@ For the rest of this document, for brevity I will be typing the
 on a Windows machine.
 
 # Naming and case sensitivity
-***
 
 Note that GGVm's build system is case sensitive. Your assets
 directory must be all lowercase. But all other instances of your
@@ -208,7 +198,6 @@ the name, or your build will fail. Please keep this in mind
 through the rest of this document.
 
 # The assets directory
-***
 
 The assets directory is where you place subdirectories for each
 game you want to wrap up with ggvm, each which contain the game
@@ -261,7 +250,6 @@ your game. It fully configures GGVm with all dependencies
 required to run your game.
 
 # Building a game for PC
-***
 
 To run the currently configured game (see section about the
 local.properties file) on PC, type:
@@ -297,7 +285,6 @@ distPackrIcon is what typically will be used for a full Windows
 PC release, say for Steam.
 
 # Building a game for Android
-***
 
 To run the currently configured game (see section about the
 local.properties file) on Android, type:
@@ -315,7 +302,6 @@ familiar with Android already, you might not have much trouble
 getting this to work without help from this file.
 
 # Building a game for iOS
-***
 
 NOTE: As of the first writing of this document, iOS builds are
 highly experimental. I have seen them run in a simulator, and
@@ -325,7 +311,6 @@ the iOS build. Then I will be updating this section with
 instructions.
 
 # Instructions for creating a custom GameModule
-***
 
 Any game you build with GGVm MUST have its own extension of the
 GameModule class. For example, Dushlan has the following file:
@@ -359,7 +344,6 @@ mapper 2, and vertical mirroring. Thus, the iNES header will be
 ignored and can be removed from the ROM.
 
 # An example, totally blank GameModule.
-***
 
 To help you get your own game running in GGVm, here is a
 complete, but totally blank GameModule class. Note that this
@@ -463,7 +447,6 @@ public class MyTitleGameModule implements GameModule {
 }
 ```
 # Instructions for creating a custom SoundtrackManager
-***
 
 A gamemodule must at least provide an anonymous inner class
 with a no-op SoundtrackManager extension, as shown in the
@@ -538,7 +521,6 @@ homebrew games, but a highly advanced sound system may be
 difficult or impossible to fully replicate.
 
 # Instructions for creating a custom RasterEffectManager
-***
 
 This is a largely experimental area of GGVm. The original idea
 of RasterEffectManager was to be able to support scanline based
@@ -563,7 +545,6 @@ the future. I'm also open to contributions if anybody wants to
 dive in to this.
 
 # Instructions for creating an NmiSafeFunctor
-***
 
 These are optional, but often are very helpful for making sure
 a game is stable in GGVm. Since GGVm makes no attempt whatsoever
