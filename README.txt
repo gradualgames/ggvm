@@ -3,6 +3,20 @@
 *by Derek Andrews <gradualgames@gmail.com>
 ****************************************************************
 
+GGVm is a porting layer for NES homebrew games. It's similar to
+an emulator, but a small amount of customization needs to be done
+for most games. The goal is for it to be a convenient, free,
+no-strings attached way for an NES homebrew developer to get
+their game wrapped up and ready to publish on multiple platforms
+without having to pay anybody or ask for permission.
+
+GGVm supports a subset of the NES's full capabilities. This
+subset was chosen to support the needs of most of today's
+homebrew developers. This enabled us to complete the project
+quickly enough to return to creating homebrew games, as a real
+emulator would take much more effort. Please read the feature
+list below to get an idea of what GGVm's capabilities are.
+
 ****************************************************************
 *Credits:
 *
@@ -82,25 +96,12 @@ You will need this to build for iOS.
 *Features and Limitations:
 ****************************************************************
 
-GGVm is a porting layer for NES homebrew games. It's similar to
-an emulator, but a small amount of customization needs to be done
-for most games. The goal is for it to be a convenient, free,
-no-strings attached way for an NES homebrew developer to get
-their game wrapped up and ready to publish on multiple platforms
-without having to pay anybody or ask for permission.
+-Smooth 60fps play on pc systems up to ~8 years old and on
+Android phones and tablets up to ~3 years old that I have
+tested. As of this writing, iOS confirmed working well.
 
-GGVm supports a subset of the NES's full capabilities. This
-subset was chosen to support the needs of most of today's
-homebrew developers. This enabled us to complete the project
-quickly enough to return to creating homebrew games, as a real
-emulator would take much more effort. Please read the feature
-list below to get an idea of what GGVm's capabilities are.
-
--Buttery smooth 60fps play on pc systems up to ~8 years old
-(that I've tested) and modern phones. Seen decent performance
-on phones up to 3 years old.
-
--Absolutely no input lag
+-No input lag added beyond latency already present in the
+controller subsystem.
 
 -Games must separate drawing in nmi from logic in main loop.
 
@@ -361,14 +362,212 @@ mapper 2, and vertical mirroring. Thus, the iNES header will be
 ignored and can be removed from the ROM.
 
 ****************************************************************
+*An example, totally blank GameModule.
+****************************************************************
+
+To help you get your own game running in GGVm, here is a
+complete, but totally blank GameModule class. Note that this
+class MUST be placed at:
+assets/mytitle/src/com/gradualgames/module/MyTitleGameModule.java
+
+Note also "MyTitle" can and should be replaced with the name of
+your game anywhere it is found, preserving case.
+
+If your game's iNES configuration is currently supported by
+GGVm, and you are returning the correct vertical or horizontal
+mirroring rendering manager (see below), your game should run,
+without sound. See above sections for instructions on building
+and running your game on your desired platform.
+
+
+package com.gradualgames.module;
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.gradualgames.ggvm.Cartridge;
+import com.gradualgames.ggvm.GGVm;
+import com.gradualgames.manager.nmi.NmiSafeFunctor;
+import com.gradualgames.manager.rastereffect.RasterEffectManager;
+import com.gradualgames.manager.render.RenderManager;
+import com.gradualgames.manager.render.VerticalMirroringRenderManager;
+import com.gradualgames.manager.soundtrack.SoundtrackManager;
+
+/**
+ * Created by derek on 1/17/2017.
+ */
+public class MyTitleGameModule implements GameModule {
+    @Override
+    public String provideTitle() {
+        return "MyTitle";
+    }
+
+    @Override
+    public String provideFileName() {
+        return "mytitle/mytitle.nes";
+    }
+
+    @Override
+    public String provideFontBitmapFileName() {
+        return "font/gameover.png";
+    }
+
+    @Override
+    public String provideFontFileName() {
+        return "font/gameover.fnt";
+    }
+
+    @Override
+    public String provideIconFileName() {
+        return null;
+    }
+
+    @Override
+    public Cartridge provideCartridge(byte[] bytes) {
+        return new Cartridge(bytes);
+    }
+
+    @Override
+    public RenderManager provideRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
+        return new VerticalMirroringRenderManager(ggvm, rasterEffectManager);
+    }
+
+    @Override
+    public RasterEffectManager provideRasterEffectManager(GGVm ggvm) {
+        return new RasterEffectManager() {
+            @Override
+            public void render(SpriteBatch spriteBatch) {
+
+            }
+        };
+    }
+
+    @Override
+    public SoundtrackManager provideSoundtrackManager(GGVm ggvm) {
+        return new SoundtrackManager("mytitle", ggvm) {
+            @Override
+            protected void handleOnRead(int address) {
+
+            }
+
+            @Override
+            protected void handleOnWrite(int address, byte value) {
+
+            }
+        };
+    }
+
+    @Override
+    public NmiSafeFunctor provideNmiSafeFunctor() {
+        return new NmiSafeFunctor() {
+            @Override
+            public boolean isPcInSafeRange(int pc) {
+                return true;
+            }
+        };
+    }
+}
+
+
+****************************************************************
 *Instructions for creating a custom SoundtrackManager
 ****************************************************************
 
-dushlan/src/com/gradualgames/manager/soundtrack/DushlanSoundtrackManager.java:
+A gamemodule must at least provide an anonymous inner class
+with a no-op SoundtrackManager extension, as shown in the
+above section. However, if you want music and sound to play back
+in your game, you need to implement the SoundtrackManager.
+Dushlan has a SoundtrackManager you can look at for an example
+of what you will need to do.
+
+dushlan/src/com/gradualgames/manager/soundtrack/DushlanSoundtrackManager.java
+
+A SoundtrackManager listens to several key locations in a game's
+rom. These locations typically will be sound engine routines,
+such as routines which play music, sfx, stop, pause, or other
+functionality. The constructor of the SoundtrackManager will
+install listeners to these locations, something like this from
+DushlanSoundtrackManager.java:
+
+ggvm.installBusEventGenerator(play_song, 1, this);
+
+This says that any time the address play_song (defined as an int
+elsewhere in the class) is executed, call into this soundtrack
+manager with that address.
+
+All the callbacks from these listeners will go into two methods,
+handleOnRead and handleOnWrite, which are abstract in the
+SoundtrackManager.java base class, forcing you to override both.
+
+Typically you will only need to work with handleOnRead, but
+there may be special scenarios in some games which require you
+to listen to a write somewhere that controls the sound playback.
+
+Most handleOnRead implementations will look something like what
+you see in DushlanSoundtrackManager.java. It will just be a
+switch case which first inspects the address to see which rout-
+ine was called. Next, the soundtrack manager inspects the ram,
+registers, or even currently swapped bank (for currently
+supported mappers) to determine which song file to play back.
+
+There are several methods in the base class of
+SoundtrackManager.java for sound playback. The main ones you
+will be using are playSong and playSfx. playSong optionally
+allows you to play a song once or loop it. Depending on the
+game, you may need to implement additional logic to support
+pause and resume (different games accomplish this in different
+ways). Songs which have an intro and looping portion also need
+special treatment. An example of this special treatment is in
+DushlanSoundtrackManager.java. When an intro is played, a
+listener is installed on nmi to poll the current song for when
+it is completed---and then the looping portion of the song,
+initialized when the intro was played, is started and the nmi
+listener removed.
+
+Why are we doing things this way with GGVm? A couple of reasons.
+One is we did not want to bother emulating the APU, and another
+is we wanted as much performance as possible, so the only thing
+that is cpu intensive at all is the 6502 cpu simulation, which
+turns out not to be all that time-consuming.
+
+A benefit to forcing the developer to write a soundtrack manager
+is, you can remove everything but rts from your game ROM's
+sound engine before publishing. This means anybody who tries to
+pull your ROM out of your jar or apk and succeeds will have a
+broken rom with no sound, and they wasted their time.
+
+Another benefit is additional mixing. In a real NES game, sound
+effects typically cancel their corresponding apu channel. In
+GGVm, the sound effect will mix along with the music.
+
+A downside is the degree of control you have over audio play-
+back. GGVm supports most typical scenarios in use for NES
+homebrew games, but a highly advanced sound system may be
+difficult or impossible to fully replicate.
 
 ****************************************************************
 *Instructions for creating a custom RasterEffectManager
 ****************************************************************
+
+This is a largely experimental area of GGVm. The original idea
+of RasterEffectManager was to be able to support scanline based
+effects of the Ppu, since GGVm does not emulate the Ppu scanline
+per scanline. It is in use in my own game, The Legends of Owlia,
+by drawing a single black rectangle at the top of the screen
+which is 16 scanline high. In the actual NES game, this was
+done using precise vblank timing and empty cpu spin loops before
+turning graphics on. In GGVm, I can replicate this behavior just
+by drawing a black rectangle at the top of the screen to hide
+scrolling updates.
+
+For real raster effects, such as split screens, it is likely
+that you will need to extend HorizontalMirroringRenderManager
+or VerticalMirroringRenderManager, and then inspect cpu
+registers and ram similar to how SoundtrackManager works to find
+out where split points are, and then render the nametable in
+a top and a bottom section. It is also likely you will need to
+use fbos to do this. I'm planning to do something like this for
+my current game, so I will be diving into this at some point in
+the future. I'm also open to contributions if anybody wants to
+dive in to this.
 
 ****************************************************************
 *Instructions for creating an NmiSafeFunctor
