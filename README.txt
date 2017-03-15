@@ -21,6 +21,23 @@ devices. Please read the feature list below to get an idea of
 what GGVm's capabilities are.
 
 ****************************************************************
+*Project goals
+****************************************************************
+
+Port - Provide as little of the NES hardware as possible for as
+much performance on as many devices as possible, requiring some
+work on the part of the developer.
+
+Package - Your game can be distributed as a Jar, a Jar+JRE, an
+APK, or an IPA.
+
+Protect - You can omit the iNES header, and remove your sound
+engine implementation from your game ROM (your soundtrack will
+be played as ogg, mp3 or wav files) Any casual hackers who
+successfully fill in your iNES header and run your game in an
+emulator will have wasted their time---no sound.
+
+****************************************************************
 *License
 ****************************************************************
 
