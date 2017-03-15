@@ -21,6 +21,17 @@ devices. Please read the feature list below to get an idea of
 what GGVm's capabilities are.
 
 ****************************************************************
+*License
+****************************************************************
+
+The license is in LICENSE in the root directory and is
+The Unlicense. See unlicense.org.
+
+There is a second license, license.txt, in assets/dushlan which
+is the BSD license, and applies only to the Dushlan binary and
+assets.
+
+****************************************************************
 *Credits:
 *
 *Derek Andrews - Author of GGVm
