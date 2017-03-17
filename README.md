@@ -18,7 +18,10 @@ fps with little or no stuttering even on somewhat old Android
 devices. Please read the feature list below to get an idea of
 what GGVm's capabilities are.
 
-# Project goals
+# Project Mission Statement
+
+Please use this mission statement as a guide if you would like
+to contribute to the project.
 
 - Port - Provide as little of the NES hardware as possible for as
 much performance on as many devices as possible, requiring some
@@ -31,68 +34,9 @@ APK, or an IPA.
 engine implementation from your game ROM (your soundtrack will
 be played as ogg, mp3 or wav files) Any casual hackers who
 successfully fill in your iNES header and run your game in an
-emulator will have wasted their time---no sound.
-
-# License
-
-The license is in LICENSE in the root directory and is
-The Unlicense. See unlicense.org.
-
-There is a second license, license.txt, in assets/dushlan which
-is the BSD license, and applies only to the Dushlan binary and
-assets.
-
-# Credits
-
-* Derek Andrews - Author of GGVm
-
-* Justin Mullin - For telling me about LibGDX and helping me come up with a way to imitate a palettized graphics mode using a fragment shader, as well as advice about performance.
-
-* LibGDX (https://libgdx.badlogicgames.com/) - The cross platform game Java game development library used to develop GGVm.
-
-* Peter McQuillan - Creator of Dúshlán, an open source game for the NES, used to demonstrate GGVm. See https://github.com/soiaf/Dushlan for more information. BSD license for his binary included in assets/dushlan/license.txt.
-
-* Brad Smith (rainwarrior) - For inspiring me to come up with a way to get my games on Steam.
-
-* Greg Caldwell - For inspiring me to come up with a way to get my games on Steam.
-
-* Adam Welch (dra600n) - For being the first guinea pig to use
-GGVm for a digitally distributed NES game besides our own
-titles.
-
-* Rob Bryant (Roth) - For helping with Adam Welch's Get 'em Gary
-GGVm release.
-
-* Joe Granato - For also inspiring me to think big and get my
-games out there, for extensive use of GGVm which prodded me to
-make many improvements, and finally for free publicity for
-GGVm (as well as other Gradual Games' efforts).
-
-* Kevin Hanley (KHAN Games) - For testing an iOS build of his
-game, The Incident, on his iPad.
-
-* Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
-to GGVm. Also for inspiring me to work really hard on
-performance issues on mobile devices.
-
-# Changes
-
-* 3-12-17: Created first version of GGVM README.txt file.
-
-# Dependencies
-
-- Java Runtime:
-You will need this to use GGVm's build system, Gradle.
-
-- Java Development Kit:
-I have been building with JDK 1.8 with no issues, but you should
-be able to use a JDK as old as 1.6 with LibGDX.
-
-- Android SDK:
-You will need this to build for Android.
-
-- XCode:
-You will need this to build for iOS.
+emulator will have wasted their time---no sound. If you are
+using any raster effects, these, too, can be omitted from the
+rom and adapted by customizing GGVm instead.
 
 # Features and Limitations
 
@@ -139,6 +83,48 @@ which discourages someone from extracting your rom.
 
 - Windowed or fullscreen mode
 
+# License
+
+The license is in LICENSE in the root directory and is
+The Unlicense. See unlicense.org.
+
+There is a second license, license.txt, in assets/dushlan which
+is the BSD license, and applies only to the Dushlan binary and
+assets.
+
+# Credits
+
+* Derek Andrews - Author of GGVm
+
+* Justin Mullin - For telling me about LibGDX and helping me come up with a way to imitate a palettized graphics mode using a fragment shader, as well as advice about performance.
+
+* LibGDX (https://libgdx.badlogicgames.com/) - The cross platform game Java game development library used to develop GGVm.
+
+* Peter McQuillan - Creator of Dúshlán, an open source game for the NES, used to demonstrate GGVm. See https://github.com/soiaf/Dushlan for more information. BSD license for his binary included in assets/dushlan/license.txt.
+
+* Brad Smith (rainwarrior) - For inspiring me to come up with a way to get my games on Steam.
+
+* Greg Caldwell - For inspiring me to come up with a way to get my games on Steam.
+
+* Adam Welch (dra600n) - For being the first guinea pig to use
+GGVm for a digitally distributed NES game besides our own
+titles.
+
+* Rob Bryant (Roth) - For helping with Adam Welch's Get 'em Gary
+GGVm release.
+
+* Joe Granato - For also inspiring me to think big and get my
+games out there, for extensive use of GGVm which prodded me to
+make many improvements, and finally for free publicity for
+GGVm (as well as other Gradual Games' efforts).
+
+* Kevin Hanley (KHAN Games) - For testing an iOS build of his
+game, The Incident, on his iPad.
+
+* Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
+to GGVm. Also for inspiring me to work really hard on
+performance issues on mobile devices.
+
 # Supported platforms
 
 Games can be packaged up for the following platforms:
@@ -148,6 +134,21 @@ Games can be packaged up for the following platforms:
 - Linux
 - Android
 - iOS
+
+# Dependencies
+
+- Java Runtime:
+You will need this to use GGVm's build system, Gradle.
+
+- Java Development Kit:
+I have been building with JDK 1.8 with no issues, but you should
+be able to use a JDK as old as 1.6 with LibGDX.
+
+- Android SDK:
+You will need this to build for Android.
+
+- XCode:
+You will need this to build for iOS.
 
 LibGDX is also capable of using GWT to compile and run in a
 web browser. I have not tested GGVm with this and I have no
