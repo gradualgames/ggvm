@@ -83,6 +83,16 @@ which discourages someone from extracting your rom.
 
 - Windowed or fullscreen mode
 
+# Supported Platforms
+
+Games can be packaged up for the following platforms:
+
+- Windows
+- Mac
+- Linux
+- Android
+- iOS
+
 # License
 
 The license is in LICENSE in the root directory and is
@@ -124,16 +134,6 @@ game, The Incident, on his iPad.
 * Alex Semenov (Shiru) - For bug reports and pointing Joe Granato
 to GGVm. Also for inspiring me to work really hard on
 performance issues on mobile devices.
-
-# Supported Platforms
-
-Games can be packaged up for the following platforms:
-
-- Windows
-- Mac
-- Linux
-- Android
-- iOS
 
 # Dependencies
 
