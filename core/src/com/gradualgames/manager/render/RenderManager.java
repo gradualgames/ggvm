@@ -125,6 +125,25 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
         Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
         pixmap.dispose();
 
+        //Allocate a pixmap big enough to accommodate four copies of the
+        //bg pattern table for each attribute in 128x128 squares in one row,
+        //followed by four copies of the spr pattern table for each attribute
+        //in 128x128 squares in the second row.
+        patternTablePixmap = new Pixmap(512, 256, Pixmap.Format.RGBA8888);
+        //Set blending to none so we can rewrite the pixmap and draw it to the
+        //pattern table texture when graphics are regenerated.
+        patternTablePixmap.setBlending(Pixmap.Blending.None);
+
+        patternTableTexture = new Texture(patternTablePixmap, false);
+        TextureRegion[][] textureRegions = TextureRegion.split(patternTableTexture, 8, 8);
+        for(int row = 0; row < 32; row++) {
+            for(int column = 0; column < 64; column++) {
+                TextureRegion textureRegion = textureRegions[row][column];
+                fixBleeding(textureRegion);
+                patternTableSprites[row][column] = new Sprite(textureRegion);
+            }
+        }
+
         //Initialize transparent mask sprite
         transparentMaskPixmap = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
         transparentMaskPixmap.setColor(Color.CLEAR);
@@ -426,15 +445,6 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
      * Generates textures and sprites based on pattern table data in ggvm.
      */
     private void generateSpritesForPatternTable() {
-        if (patternTablePixmap != null) {
-            patternTablePixmap.dispose();
-        }
-        //Allocate a pixmap big enough to accommodate four copies of the
-        //bg pattern table for each attribute in 128x128 squares in one row,
-        //followed by four copies of the spr pattern table for each attribute
-        //in 128x128 squares in the second row.
-        patternTablePixmap = new Pixmap(512, 256, Pixmap.Format.RGBA8888);
-
         //Iterate over current pattern table in tile units
         for(int row = 0; row < 16; row++) {
             for(int column = 0; column < 16; column++) {
@@ -459,19 +469,7 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
                 }
             }
         }
-
-        if (patternTableTexture != null) {
-            patternTableTexture.dispose();
-        }
-        patternTableTexture = new Texture(patternTablePixmap);
-        TextureRegion[][] textureRegions = TextureRegion.split(patternTableTexture, 8, 8);
-        for(int row = 0; row < 32; row++) {
-            for(int column = 0; column < 64; column++) {
-                TextureRegion textureRegion = textureRegions[row][column];
-                fixBleeding(textureRegion);
-                patternTableSprites[row][column] = new Sprite(textureRegion);
-            }
-        }
+        patternTableTexture.draw(patternTablePixmap, 0, 0);
     }
 
     private void fixBleeding(TextureRegion textureRegion) {
