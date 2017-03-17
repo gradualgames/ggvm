@@ -125,7 +125,7 @@ game, The Incident, on his iPad.
 to GGVm. Also for inspiring me to work really hard on
 performance issues on mobile devices.
 
-# Supported platforms
+# Supported Platforms
 
 Games can be packaged up for the following platforms:
 
@@ -165,7 +165,7 @@ The GGVm snapshot contains a rom and assets for Dushlan, an open
 source NES game, to demo GGVm. Without a game and associated
 java classes, GGVm will fail to build.
 
-# GGVm's build system
+# GGVm's Build System
 
 GGVm uses Gradle, a self-bootstrapping build system which uses
 Groovy. On Windows based machines, you can invoke all build
@@ -188,7 +188,7 @@ For the rest of this document, for brevity I will be typing the
 *nix style of invocation, so please keep this in mind if you are
 on a Windows machine.
 
-# Naming and case sensitivity
+# Naming and Case Sensitivity
 
 Note that GGVm's build system is case sensitive. Your assets
 directory must be all lowercase. But all other instances of your
@@ -198,7 +198,7 @@ class that Dushlan needs MUST have the exact string Dushlan in
 the name, or your build will fail. Please keep this in mind
 through the rest of this document.
 
-# The assets directory
+# The Assets Directory
 
 The assets directory is where you place subdirectories for each
 game you want to wrap up with ggvm, each which contain the game
@@ -207,6 +207,10 @@ executable, Android launcher and window. Depending on which
 features you are using for your game, some of these directories
 are optional. A description follows. Note the dushlan directory
 is used as an example.
+
+dushlan/dushlan.nes:
+Not optional. This is the game's rom. The name can be anything,
+see the section below about creating a GameModule.
 
 dushlan/icon:
 
@@ -250,7 +254,7 @@ that you absolutely MUST have in your assets directory to build
 your game. It fully configures GGVm with all dependencies
 required to run your game.
 
-# Building a game for PC
+# Building a Game for PC
 
 To run the currently configured game (see section about the
 local.properties file) on PC, type:
@@ -285,7 +289,7 @@ machines at the moment.
 distPackrIcon is what typically will be used for a full Windows
 PC release, say for Steam.
 
-# Building a game for Android
+# Building a Game for Android
 
 To run the currently configured game (see section about the
 local.properties file) on Android, type:
@@ -302,7 +306,7 @@ on how to build a release version of an Android APK. If you are
 familiar with Android already, you might not have much trouble
 getting this to work without help from this file.
 
-# Building a game for iOS
+# Building a Game for iOS
 
 NOTE: As of the first writing of this document, iOS builds are
 highly experimental. I have seen them run in a simulator, and
@@ -311,7 +315,7 @@ process of getting an App Store license so that I can firm up
 the iOS build. Then I will be updating this section with
 instructions.
 
-# Instructions for creating a custom GameModule
+# Instructions for Creating a Custom GameModule
 
 Any game you build with GGVm MUST have its own extension of the
 GameModule class. For example, Dushlan has the following file:
