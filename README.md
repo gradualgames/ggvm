@@ -348,7 +348,7 @@ This configures the cartridge for 32 prg roms, 0 chr roms,
 mapper 2, and vertical mirroring. Thus, the iNES header will be
 ignored and can be removed from the ROM.
 
-# An example, totally blank GameModule.
+# An Example GameModule
 
 To help you get your own game running in GGVm, here is a
 complete, but totally blank GameModule class. Note that this
@@ -451,7 +451,7 @@ public class MyTitleGameModule implements GameModule {
     }
 }
 ```
-# Instructions for creating a custom SoundtrackManager
+# Instructions for Creating a Custom SoundtrackManager
 
 A gamemodule must at least provide an anonymous inner class
 with a no-op SoundtrackManager extension, as shown in the
@@ -525,7 +525,7 @@ back. GGVm supports most typical scenarios in use for NES
 homebrew games, but a highly advanced sound system may be
 difficult or impossible to fully replicate.
 
-# Instructions for creating a custom RasterEffectManager
+# Instructions for Creating a Custom RasterEffectManager
 
 This is a largely experimental area of GGVm. The original idea
 of RasterEffectManager was to be able to support scanline based
@@ -549,7 +549,7 @@ my current game, so I will be diving into this at some point in
 the future. I'm also open to contributions if anybody wants to
 dive in to this.
 
-# Instructions for creating an NmiSafeFunctor
+# Instructions for Creating an NmiSafeFunctor
 
 These are optional, but often are very helpful for making sure
 a game is stable in GGVm. Since GGVm makes no attempt whatsoever
