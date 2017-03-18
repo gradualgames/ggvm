@@ -71,8 +71,7 @@ which discourages someone from extracting your rom.
 
 - Mapper 0 and 2 supported, 4 coming soon
 
-- CHR-RAM supported during transitions. Live updates during
- gameplay are not supported.
+- Live CHR-RAM streaming supported, currently performs best on PC.
 
 - No undocumented cpu opcodes supported yet, but can add support
 
