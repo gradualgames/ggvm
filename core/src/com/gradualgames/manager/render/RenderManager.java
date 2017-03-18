@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gradualgames.ggvm.GGVm;
-import com.gradualgames.ggvm.OnGenerateGraphicsListener;
+import com.gradualgames.ggvm.OnGeneratePatternTableListener;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 
 /**
@@ -54,12 +54,11 @@ import com.gradualgames.manager.rastereffect.RasterEffectManager;
  * various configurations depending on the mapper, but this should not be very difficult to
  * implement as PRG-ROM bankswitching already works well (see Mapper 2 and RomSwitchboard).
  *
- * TODO: Implement live CHR-RAM updates. This may prove to be tricky or impossible especially on
- * mobile devices. In theory it should be possible to use an FBO insteada of a texture and modify
- * its pixels on every frame. We could wire up the PpuBus to fire events whenever it is invalidated,
- * and regenerate just the CHR tiles that were affected.
+ * TODO: Improve performance of live CHR-RAM updates on mobile. Works pretty well on PC, but
+ * framerate drops to ~55 or so on Android devices when large CHR-RAM streams are being loaded
+ * via nmi.
  */
-public abstract class RenderManager implements OnGenerateGraphicsListener {
+public abstract class RenderManager implements OnGeneratePatternTableListener {
 
     protected GGVm ggvm;
     protected RasterEffectManager rasterEffectManager;
@@ -67,6 +66,7 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
     //LibGDX objects
     protected FitViewport viewPort;
     protected Camera camera;
+    protected Pixmap[] patternPixmap;
     protected Pixmap patternTablePixmap;
     protected Texture patternTableTexture;
     protected Sprite[][] patternTableSprites = new Sprite[32][64];
@@ -133,6 +133,12 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
         //Set blending to none so we can rewrite the pixmap and draw it to the
         //pattern table texture when graphics are regenerated.
         patternTablePixmap.setBlending(Pixmap.Blending.None);
+
+        patternPixmap = new Pixmap[4];
+        for(int i = 0; i < 4; i++) {
+            patternPixmap[i] = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
+            patternPixmap[i].setBlending(Pixmap.Blending.None);
+        }
 
         patternTableTexture = new Texture(patternTablePixmap, false);
         TextureRegion[][] textureRegions = TextureRegion.split(patternTableTexture, 8, 8);
@@ -436,10 +442,53 @@ public abstract class RenderManager implements OnGenerateGraphicsListener {
      * on data in ggvm.
      */
     @Override
-    public void onGenerateGraphics() {
-        Gdx.app.log(getClass().getSimpleName(), "onGenerateGraphics()");
+    public void onGeneratePatternTable() {
+        Gdx.app.log(getClass().getSimpleName(), "onGeneratePatternTable()");
         generateSpritesForPatternTable();
     }
+
+    /**
+     * Callback from ggvm which tells the application to generate a single pattern
+     * table tile.
+     */
+    @Override
+    public void onGeneratePattern(int patternAddress) {
+        int patternIndex = patternAddress >> 4;
+        int patternTableSelector = patternIndex >> 8;
+        patternIndex &= 0xff;
+        int indexRow = patternIndex >> 4;
+        int indexColumn = patternIndex & 0x0f;
+
+        //Iterate over current tile in pixel units
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                //Select which monochrome palette we're using
+                //Note that this only supports bg drawing from one pattern table
+                //and spr drawing from the opposite pattern table. We'll have to come up
+                //with something else for games that draw bg and spr from just one pattern table.
+                int[][] monochromePalette = null;
+                if (ggvm.getBackgroundPatternTableAddress() == patternTableSelector) {
+                    monochromePalette = bgMonochromePalette;
+                }
+                if (ggvm.getSpritePatternTableAddress() == patternTableSelector) {
+                    monochromePalette = sprMonochromePalette;
+                }
+
+                int pixel = ggvm.getChrPixel(patternTableSelector * 256 + indexRow * 16 + indexColumn, x, y);
+                for(int attribute = 0; attribute < 4; attribute++) {
+                    //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
+                    //the current column within the pattern table * 8
+                    patternPixmap[attribute].drawPixel(7 - x, y, monochromePalette[attribute][pixel]);
+                }
+            }
+        }
+
+        for(int attribute = 0; attribute < 4; attribute++) {
+            int patternTableXOffsetInPixels = attribute * 128 + indexColumn * 8;
+            int patternTableYOffsetInPixels = patternTableSelector * 128 + indexRow * 8;
+            patternTableTexture.draw(patternPixmap[attribute], patternTableXOffsetInPixels, patternTableYOffsetInPixels);
+        }
+     }
 
     /**
      * Generates textures and sprites based on pattern table data in ggvm.

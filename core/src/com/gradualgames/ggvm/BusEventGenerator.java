@@ -37,8 +37,8 @@ public class BusEventGenerator implements ReadWriteRange {
 
     @Override
     public void write(int address, byte value) {
-        busListener.onWrite(address, value);
         readWriteRange.write(address, value);
+        busListener.onWrite(address, value);
     }
 
     @Override
@@ -53,11 +53,11 @@ public class BusEventGenerator implements ReadWriteRange {
 
     @Override
     public void save(OutputStream outputStream) throws IOException {
-
+        readWriteRange.save(outputStream);
     }
 
     @Override
     public void load(InputStream inputStream) throws IOException {
-
+        readWriteRange.load(inputStream);
     }
 }

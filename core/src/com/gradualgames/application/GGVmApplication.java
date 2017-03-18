@@ -6,7 +6,7 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.GGVm;
-import com.gradualgames.ggvm.OnGenerateGraphicsListener;
+import com.gradualgames.ggvm.OnGeneratePatternTableListener;
 import com.gradualgames.input.InputProcessorBase;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 import com.gradualgames.manager.render.RenderManager;
@@ -30,7 +30,7 @@ import java.io.OutputStream;
  * and printing uncaught exceptions, cpu status and current bank (for supported mappers) to
  * the log file in case of a catastrophic crash.
  */
-public class GGVmApplication extends ApplicationAdapter implements OnGenerateGraphicsListener, Thread.UncaughtExceptionHandler {
+public class GGVmApplication extends ApplicationAdapter implements OnGeneratePatternTableListener, Thread.UncaughtExceptionHandler {
     //The GGVm virtual machine object, this is the integration point to our NES games.
     private GGVm ggvm;
 
@@ -100,7 +100,7 @@ public class GGVmApplication extends ApplicationAdapter implements OnGenerateGra
         loadState();
 
         //Generate graphics at least once in case we have a CHR-ROM mapper.
-        renderManager.onGenerateGraphics();
+        renderManager.onGeneratePatternTable();
 
         ggvm.start();
     }
@@ -197,7 +197,12 @@ public class GGVmApplication extends ApplicationAdapter implements OnGenerateGra
     }
 
     @Override
-    public void onGenerateGraphics() {
-        renderManager.onGenerateGraphics();
+    public void onGeneratePatternTable() {
+        renderManager.onGeneratePatternTable();
+    }
+
+    @Override
+    public void onGeneratePattern(int patternAddress) {
+        renderManager.onGeneratePattern(patternAddress);
     }
 }

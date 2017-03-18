@@ -9,7 +9,9 @@ package com.gradualgames.ggvm;
  * RenderManager to see how ppu data is transformed into actual textures for
  * use in a modern gpu.
  */
-public interface OnGenerateGraphicsListener {
+public interface OnGeneratePatternTableListener {
 
-    void onGenerateGraphics();
+    void onGeneratePatternTable();
+
+    void onGeneratePattern(int patternAddress);
 }

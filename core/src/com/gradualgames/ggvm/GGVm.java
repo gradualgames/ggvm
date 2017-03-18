@@ -29,7 +29,7 @@ import java.io.OutputStream;
  * performance as possible, written in Java, so it is easy to port to numerous operating
  * systems for distributing an NES game.
  */
-public class GGVm {
+public class GGVm implements BusListener {
 
     private static final int INSTRUCTIONS_PER_SECOND_LOGGING_INTERVAL = 200;
 
@@ -55,20 +55,18 @@ public class GGVm {
 
     private ReadWriteRangeNop readWriteRangeNopPpu;
 
-    private OnGenerateGraphicsListener onGenerateGraphicsListener;
+    private OnGeneratePatternTableListener onGeneratePatternTableListener;
 
     private NmiSafeFunctor nmiSafeFunctor;
 
     private boolean alive = false;
 
-    private boolean lastBackgroundVisibleState = false;
-
     private int instructionsPerSecondLoggingIntervalCounter = INSTRUCTIONS_PER_SECOND_LOGGING_INTERVAL;
 
-    public GGVm(Cartridge cartridge, NmiSafeFunctor nmiSafeFunctor, OnGenerateGraphicsListener onGenerateGraphicsListener) {
+    public GGVm(Cartridge cartridge, NmiSafeFunctor nmiSafeFunctor, OnGeneratePatternTableListener onGeneratePatternTableListener) {
         this.cartridge = cartridge;
         this.nmiSafeFunctor = nmiSafeFunctor;
-        this.onGenerateGraphicsListener = onGenerateGraphicsListener;
+        this.onGeneratePatternTableListener = onGeneratePatternTableListener;
 
         //Configure mapper based on the cartridge data.
         ReadWriteRangeProvider mapper = cartridge.configureMapper();
@@ -80,6 +78,8 @@ public class GGVm {
         //Configure ppu and dependencies
         ppuBus = new PpuBus(mapper, readWriteRangeNopPpu);
         ppu = new Ppu(ppuBus);
+        //Listen for writes to CHR-RAM
+        ppuBus.installBusEventGenerator(0, 0x2000, this);
 
         //Configure cpu and dependencies
         cpuRam = new Ram(0, Cpu.RAM_SIZE);
@@ -157,12 +157,6 @@ public class GGVm {
                     cpu.nmi();
                 }
             }
-
-            boolean newBackgroundVisibleState = ppu.isBackgroundVisible();
-            if (newBackgroundVisibleState && !lastBackgroundVisibleState) {
-                onGenerateGraphicsListener.onGenerateGraphics();
-            }
-            lastBackgroundVisibleState = newBackgroundVisibleState;
         }
     }
 
@@ -523,6 +517,19 @@ public class GGVm {
     public void advance(int instructionCount) {
         while(instructionCount-- >= 0) {
             cpu.execute();
+        }
+    }
+
+    @Override
+    public void onRead(int address) {
+
+    }
+
+    @Override
+    public void onWrite(int address, byte value) {
+        //If we're writing the very last byte of a chr tile
+        if ((address & 0xf) == 0xf) {
+            onGeneratePatternTableListener.onGeneratePattern(address - 0xf);
         }
     }
 }
