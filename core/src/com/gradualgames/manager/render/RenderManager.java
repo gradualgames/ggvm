@@ -418,7 +418,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
     private void initializeMonochromePalette() {
         Gdx.app.log(getClass().getSimpleName(), "initializeMonochromePalette()");
         for (int pixelValue = 0; pixelValue <= 3; pixelValue++) {
-            monochromePalette[pixelValue] = pixelToShaderPixel(0f, pixelValue, pixelValue == 0 ? true : false);
+            monochromePalette[pixelValue] = pixelToShaderPixel(pixelValue, pixelValue == 0 ? true : false);
         }
     }
 
@@ -436,9 +436,8 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
      * @param transparentColor
      * @return
      */
-    private int pixelToShaderPixel(float offset, int pixelValue, boolean transparentColor) {
+    private int pixelToShaderPixel(int pixelValue, boolean transparentColor) {
         float r = (((float) pixelValue) * (.25f / 4f)) + (.25f / 8f);
-        float b = offset;
         return Color.rgba8888(r / 2, 0, 0, transparentColor ? 0f : 1f);
     }
 
