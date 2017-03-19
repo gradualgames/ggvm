@@ -66,16 +66,17 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
     //LibGDX objects
     protected FitViewport viewPort;
     protected Camera camera;
-    protected Pixmap[] patternPixmap;
+    protected Pixmap patternPixmap;
     protected Pixmap patternTablePixmap;
     protected Texture patternTableTexture;
-    protected Sprite[][] patternTableSprites = new Sprite[32][64];
+    protected Sprite[][] patternTableSprites = new Sprite[32][16];
     protected int backgroundSpritesCount = 0;
     protected int foregroundSpritesCount = 0;
     protected int[] backgroundSprites = new int[64];
     protected int[] foregroundSprites = new int[64];
     protected boolean[] isBgTransparentMask = new boolean[64];
     protected boolean[] isSprTransparentMask = new boolean[64];
+    protected float[] attributes = new float[4];
     protected Color bgColor = Color.BLACK;
     protected ShapeRenderer shapeRenderer;
     protected Pixmap palettePixmap;
@@ -95,8 +96,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
 
     //Palette information
     protected int[] masterPalette = new int[64];
-    protected int[][] bgMonochromePalette = new int[4][4];
-    protected int[][] sprMonochromePalette = new int[4][4];
+    protected int[] monochromePalette = new int[4];
 
     public RenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
         this.ggvm = ggvm;
@@ -118,6 +118,9 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         fragmentShader = Gdx.files.internal("shaders/fragment_shader.glsl").readString();
         shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
 
+        //Initialize attribute value (used by fragmentShader)
+        initializeAttributes();
+
         //Make the mouse cursor transparent
         Pixmap pixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.argb8888(0, 0, 0, 0));
@@ -125,25 +128,20 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
         pixmap.dispose();
 
-        //Allocate a pixmap big enough to accommodate four copies of the
-        //bg pattern table for each attribute in 128x128 squares in one row,
-        //followed by four copies of the spr pattern table for each attribute
-        //in 128x128 squares in the second row.
-        patternTablePixmap = new Pixmap(512, 256, Pixmap.Format.RGBA8888);
+        //Allocate a pixmap big enough to accommodate both pattern tables.
+        patternTablePixmap = new Pixmap(128, 256, Pixmap.Format.RGBA8888);
         //Set blending to none so we can rewrite the pixmap and draw it to the
         //pattern table texture when graphics are regenerated.
         patternTablePixmap.setBlending(Pixmap.Blending.None);
 
-        patternPixmap = new Pixmap[4];
-        for(int i = 0; i < 4; i++) {
-            patternPixmap[i] = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
-            patternPixmap[i].setBlending(Pixmap.Blending.None);
-        }
+        //Allocate a pixmap the size of one tile for live CHR-RAM updates.
+        patternPixmap = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
+        patternPixmap.setBlending(Pixmap.Blending.None);
 
         patternTableTexture = new Texture(patternTablePixmap, false);
         TextureRegion[][] textureRegions = TextureRegion.split(patternTableTexture, 8, 8);
         for(int row = 0; row < 32; row++) {
-            for(int column = 0; column < 64; column++) {
+            for(int column = 0; column < 16; column++) {
                 TextureRegion textureRegion = textureRegions[row][column];
                 fixBleeding(textureRegion);
                 patternTableSprites[row][column] = new Sprite(textureRegion);
@@ -169,7 +167,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         palettePixmap = new Pixmap(32, 1, Pixmap.Format.RGBA8888);
         paletteTexture = new Texture(palettePixmap);
         masterPalette = loadPalette("palette/nespalette.bmp", 1, 1, 32, 32, 16, 4);
-        initializeMonochromePalettes();
+        initializeMonochromePalette();
     }
 
     public void resize(int width, int height) {
@@ -313,7 +311,8 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                         spriteBatch.enableBlending();
                         int indexRow = tile >> 4;
                         int indexColumn = tile & 0x0f;
-                        Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][attribute * 16 + indexColumn];
+                        Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                        sprite.setColor(0, attributes[attribute], .5f, 0);
                         sprite.setPosition(x, 231 - y);
                         sprite.setFlip(horizontalFlip, verticalFlip);
                         sprite.draw(spriteBatch);
@@ -336,7 +335,8 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                 if (y != 0xff) {
                     int indexRow = index >> 4;
                     int indexColumn = index & 0x0f;
-                    Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][attribute * 16 + indexColumn];
+                    Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                    sprite.setColor(0, attributes[attribute], .5f, 0);
                     sprite.setPosition(x, 239 - y - 16);
                     sprite.setFlip(horizontalFlip, verticalFlip);
                     sprite.draw(spriteBatch);
@@ -344,7 +344,8 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                     int secondIndex = (index - 1) & 0xff;
                     indexRow = secondIndex >> 4;
                     indexColumn = secondIndex & 0x0f;
-                    sprite = patternTableSprites[patternTableOffset * 16 + indexRow][attribute * 16 + indexColumn];
+                    sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                    sprite.setColor(0, attributes[attribute], .5f, 0);
                     sprite.setPosition(x, 231 - y);
                     sprite.setFlip(horizontalFlip, verticalFlip);
                     sprite.draw(spriteBatch);
@@ -391,27 +392,33 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
     }
 
     /**
-     * Initializes monochrome palettes used when generating textures from chr data.
+     * Initialize attribute values used for the shader. These values
+     * are used with setColor when drawing Sprite objects (both for
+     * backgrounds and sprites with respect to ggvm) to set the green
+     * channel to guide the shader as to which portion of the palette
+     * lookup texture to use. The blue channel is set to 0 for backgrounds
+     * and .5 for sprites, as well.
+     */
+    private void initializeAttributes() {
+        for(int attribute = 0; attribute < 4; attribute++) {
+            attributes[attribute] = (((float) attribute) * .25f) / 2f;
+        }
+    }
+
+    /**
+     * Initializes monochrome palette used when generating textures from chr data.
      * GGVm palettes consist of 4 sets of 4 colors. Each set of 4 is considered an
      * attribute. The g component of every pixel is set up to pick an attribute by
      * setting it to the values 0, .25, .5 and .75, to be used as part of a u,v coordinate
      * by the shader to pick the correct color. The r component consists of further
      * subdivisions of 4 in increments of .25/4, added to the g component to pick the
-     * correct color from the background or sprite palette.
-     * <p>
-     * For the sprite palette, the alpha channel is set to be transparent for the first
-     * of every set of four colors.
+     * correct color from the background or sprite palette. The b component picks the offset
+     * within the palette lookup table, either 0 or .5 to pick bg or sprites.
      */
-    private void initializeMonochromePalettes() {
-        Gdx.app.log(getClass().getSimpleName(), "initializeMonochromePalettes()");
-        for (int attributeValue = 0; attributeValue <= 3; attributeValue++) {
-            for (int pixelValue = 0; pixelValue <= 3; pixelValue++) {
-                bgMonochromePalette[attributeValue][pixelValue] = pixelToShaderPixel(0f, pixelValue, attributeValue, pixelValue == 0 ? true : false);
-            }
-
-            for (int pixelValue = 0; pixelValue <= 3; pixelValue++) {
-                sprMonochromePalette[attributeValue][pixelValue] = pixelToShaderPixel(.5f, pixelValue, attributeValue, pixelValue == 0 ? true : false);
-            }
+    private void initializeMonochromePalette() {
+        Gdx.app.log(getClass().getSimpleName(), "initializeMonochromePalette()");
+        for (int pixelValue = 0; pixelValue <= 3; pixelValue++) {
+            monochromePalette[pixelValue] = pixelToShaderPixel(0f, pixelValue, pixelValue == 0 ? true : false);
         }
     }
 
@@ -426,15 +433,13 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
      * attribute value.
      *
      * @param pixelValue
-     * @param attributeValue
      * @param transparentColor
      * @return
      */
-    private int pixelToShaderPixel(float offset, int pixelValue, int attributeValue, boolean transparentColor) {
+    private int pixelToShaderPixel(float offset, int pixelValue, boolean transparentColor) {
         float r = (((float) pixelValue) * (.25f / 4f)) + (.25f / 8f);
-        float g = ((float) attributeValue) * .25f;
         float b = offset;
-        return Color.rgba8888(r / 2, g / 2, b, transparentColor ? 0f : 1f);
+        return Color.rgba8888(r / 2, 0, 0, transparentColor ? 0f : 1f);
     }
 
     /**
@@ -458,36 +463,19 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         patternIndex &= 0xff;
         int indexRow = patternIndex >> 4;
         int indexColumn = patternIndex & 0x0f;
+        int patternTableXOffsetInPixels = indexColumn * 8;
+        int patternTableYOffsetInPixels = patternTableSelector * 128 + indexRow * 8;
 
         //Iterate over current tile in pixel units
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                //Select which monochrome palette we're using
-                //Note that this only supports bg drawing from one pattern table
-                //and spr drawing from the opposite pattern table. We'll have to come up
-                //with something else for games that draw bg and spr from just one pattern table.
-                int[][] monochromePalette = null;
-                if (ggvm.getBackgroundPatternTableAddress() == patternTableSelector) {
-                    monochromePalette = bgMonochromePalette;
-                }
-                if (ggvm.getSpritePatternTableAddress() == patternTableSelector) {
-                    monochromePalette = sprMonochromePalette;
-                }
-
                 int pixel = ggvm.getChrPixel(patternTableSelector * 256 + indexRow * 16 + indexColumn, x, y);
-                for(int attribute = 0; attribute < 4; attribute++) {
-                    //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
-                    //the current column within the pattern table * 8
-                    patternPixmap[attribute].drawPixel(7 - x, y, monochromePalette[attribute][pixel]);
-                }
+                //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
+                //the current column within the pattern table * 8
+                patternPixmap.drawPixel(7 - x, y, monochromePalette[pixel]);
             }
         }
-
-        for(int attribute = 0; attribute < 4; attribute++) {
-            int patternTableXOffsetInPixels = attribute * 128 + indexColumn * 8;
-            int patternTableYOffsetInPixels = patternTableSelector * 128 + indexRow * 8;
-            patternTableTexture.draw(patternPixmap[attribute], patternTableXOffsetInPixels, patternTableYOffsetInPixels);
-        }
+        patternTableTexture.draw(patternPixmap, patternTableXOffsetInPixels, patternTableYOffsetInPixels);
      }
 
     /**
@@ -501,18 +489,12 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                 for (int y = 0; y < 8; y++) {
                     for (int x = 0; x < 8; x++) {
                         for(int patternTableSelector = 0; patternTableSelector < 2; patternTableSelector++) {
-                            int[][] monochromePalette =
-                                    patternTableSelector == 0 ?
-                                            (ggvm.getBackgroundPatternTableAddress() == 0 ? bgMonochromePalette : sprMonochromePalette) :
-                                            ggvm.getSpritePatternTableAddress() == 0 ? bgMonochromePalette : sprMonochromePalette;
                             int pixel = ggvm.getChrPixel(patternTableSelector * 256 + row * 16 + column, x, y);
-                            for(int attribute = 0; attribute < 4; attribute++) {
-                                //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
-                                //the current column within the pattern table * 8
-                                int patternTableXOffsetInPixels = attribute * 128 + column * 8;
-                                int patternTableYOffsetInPixels = patternTableSelector * 128 + row * 8;
-                                patternTablePixmap.drawPixel(7 - x + patternTableXOffsetInPixels, y + patternTableYOffsetInPixels, monochromePalette[attribute][pixel]);
-                            }
+                            //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
+                            //the current column within the pattern table * 8
+                            int patternTableXOffsetInPixels = column * 8;
+                            int patternTableYOffsetInPixels = patternTableSelector * 128 + row * 8;
+                            patternTablePixmap.drawPixel(7 - x + patternTableXOffsetInPixels, y + patternTableYOffsetInPixels, monochromePalette[pixel]);
                         }
                     }
                 }

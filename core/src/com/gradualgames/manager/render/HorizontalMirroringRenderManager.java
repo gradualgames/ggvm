@@ -1,5 +1,6 @@
 package com.gradualgames.manager.render;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.ggvm.Ppu;
@@ -56,8 +57,10 @@ public class HorizontalMirroringRenderManager extends RenderManager {
 
                 int indexRow = index >> 4;
                 int indexColumn = index & 0x0f;
-                patternTableSprites[patternTableOffset * 16 + indexRow][attribute * 16 + indexColumn].setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);
-                patternTableSprites[patternTableOffset * 16 + indexRow][attribute * 16 + indexColumn].draw(spriteBatch);
+                Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                sprite.setColor(0, attributes[attribute], 0, 0);
+                sprite.setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);
+                sprite.draw(spriteBatch);
                 screenY += 8;
                 nameTableY++;
                 nameTableRowCount--;

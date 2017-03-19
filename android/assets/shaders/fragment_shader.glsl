@@ -15,8 +15,8 @@ uniform mat4 u_projTrans;
 void main() {
     vec4 currentPixelColor = texture2D(u_texture, v_texCoords).rgba;
     float pixel = currentPixelColor.r;
-    float attr = currentPixelColor.g;
-    float offset = currentPixelColor.b;
+    float attr = v_color.g;
+    float offset = v_color.b;
     vec2 paletteTextureCoords = vec2(attr + pixel + offset, .5);
     vec3 outputPixelColor = texture2D(u_paletteTexture, paletteTextureCoords).rgb;
     gl_FragColor = vec4(outputPixelColor, currentPixelColor.a);
