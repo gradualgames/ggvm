@@ -483,17 +483,15 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
      */
     private void generateSpritesForPatternTable() {
         //Iterate over current pattern table in tile units
-        for(int row = 0; row < 16; row++) {
-            for(int column = 0; column < 16; column++) {
-                //Iterate over current tile in pixel units
-                for (int y = 0; y < 8; y++) {
-                    for (int x = 0; x < 8; x++) {
-                        for(int patternTableSelector = 0; patternTableSelector < 2; patternTableSelector++) {
+        for(int patternTableSelector = 0; patternTableSelector < 2; patternTableSelector++) {
+            for(int row = 0; row < 16; row++) {
+                for(int column = 0; column < 16; column++) {
+                    int patternTableXOffsetInPixels = column * 8;
+                    int patternTableYOffsetInPixels = patternTableSelector * 128 + row * 8;
+                    //Iterate over current tile in pixel units
+                    for (int y = 0; y < 8; y++) {
+                        for (int x = 0; x < 8; x++) {
                             int pixel = ggvm.getChrPixel(patternTableSelector * 256 + row * 16 + column, x, y);
-                            //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
-                            //the current column within the pattern table * 8
-                            int patternTableXOffsetInPixels = column * 8;
-                            int patternTableYOffsetInPixels = patternTableSelector * 128 + row * 8;
                             patternTablePixmap.drawPixel(7 - x + patternTableXOffsetInPixels, y + patternTableYOffsetInPixels, monochromePalette[pixel]);
                         }
                     }
