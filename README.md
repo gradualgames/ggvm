@@ -293,16 +293,22 @@ PC release, say for Steam.
 To run the currently configured game (see section about the
 local.properties file) on Android, type:
 
+```
 ./gradlew android:run
+```
 
 To build the currently configured game as an APK for Android,
 type:
 
+```
 ./gradlew android:assembleDebug
+```
 
 To build a release version type:
 
+```
 ./gradlew android:assembleRelease
+```
 
 Note: How to sign your release APK in preparation for publishing
 on the Google Play Store is outside the scope of this document.
