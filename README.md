@@ -42,7 +42,7 @@ rom and adapted by customizing GGVm instead.
 
 - Smooth 60fps play on pc systems up to ~8 years old and on
 Android phones and tablets up to ~3 years old that I have
-tested. As of this writing, iOS confirmed working well.
+tested. iOS working just as well.
 
 - No input lag added beyond latency already present in the
 controller subsystem.
@@ -300,19 +300,49 @@ type:
 
 ./gradlew android:assembleDebug
 
-NOTE: Future versions of this README.txt will have information
-on how to build a release version of an Android APK. If you are
-familiar with Android already, you might not have much trouble
-getting this to work without help from this file.
+To build a release version type:
+
+./gradlew android:assembleRelease
+
+Note: How to sign your release APK in preparation for publishing
+on the Google Play Store is outside the scope of this document.
 
 # Building a Game for iOS
 
-NOTE: As of the first writing of this document, iOS builds are
-highly experimental. I have seen them run in a simulator, and
-KHAN Games has seen it run on an iPad. I am currently in the
-process of getting an App Store license so that I can firm up
-the iOS build. Then I will be updating this section with
-instructions.
+To build and run your game for iOS, you will have to have a Mac, and an
+Apple Developer account (99$). You will need to have a bundle identifier
+set up in your Apple Developer account, and a provisioning profile. Then,
+you need to modify your robovm.properties file, which is located in
+ios/robotvm.properties, so that app.id matches your bundle identifier.
+In theory that should be all you need. To run your game in an iOS
+simulator, you can type:
+
+```
+./gradlew ios:launchIPadSimulator
+```
+
+or
+
+```
+./gradlew ios:launchiPhoneSimulator
+```
+
+To run your game on your own iOS device, (note: The device's UUID must be
+registered with your Apple Developer account or you will not be able to run
+anything on it)
+
+```
+./gradlew ios:launchIOSDevice
+```
+
+To build an IPA file,
+
+```
+./gradlew ios:createIPA
+```
+
+Actually deploying an IPA file on the App Store is outside the scope of this
+document.
 
 # Instructions for Creating a Custom GameModule
 
