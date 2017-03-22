@@ -315,6 +315,11 @@ on the Google Play Store is outside the scope of this document.
 
 # Building a Game for iOS
 
+NOTE: .ogg sound files do not play back on iOS. It is recommended to use
+.mp3 for all platforms if you plan to deploy on iOS. NOTE: The included
+Dushlan assets are all .ogg files and will not run on iOS. I will update
+this in the future.
+
 To build and run your game for iOS, you will have to have a Mac, and an
 Apple Developer account (99$). You will need to have a bundle identifier
 set up in your Apple Developer account, and a provisioning profile. Then,
