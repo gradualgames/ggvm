@@ -324,7 +324,7 @@ To build and run your game for iOS, you will have to have a Mac, and an
 Apple Developer account (99$). You will need to have a bundle identifier
 set up in your Apple Developer account, and a provisioning profile. Then,
 you need to modify your robovm.properties file, which is located in
-ios/robotvm.properties, so that app.id matches your bundle identifier.
+ios/robovm.properties, so that app.id matches your bundle identifier.
 In theory that should be all you need. To run your game in an iOS
 simulator, you can type:
 
