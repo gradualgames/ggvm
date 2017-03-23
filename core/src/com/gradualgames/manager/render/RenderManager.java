@@ -85,6 +85,8 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
     protected Pixmap transparentMaskPixmap;
     protected Texture transparentMaskTexture;
     protected Sprite transparentMaskSprite;
+    protected FrameBuffer mainFrameBuffer;
+    protected TextureRegion mainTextureRegion;
     protected FrameBuffer foregroundSpritesFrameBuffer;
     protected TextureRegion foregroundSpritesTextureRegion;
     protected FPSLogger fpsLogger = new FPSLogger();
@@ -143,7 +145,6 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         for(int row = 0; row < 32; row++) {
             for(int column = 0; column < 16; column++) {
                 TextureRegion textureRegion = textureRegions[row][column];
-                fixBleeding(textureRegion);
                 patternTableSprites[row][column] = new Sprite(textureRegion);
             }
         }
@@ -154,6 +155,13 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         transparentMaskPixmap.fill();
         transparentMaskTexture = new Texture(transparentMaskPixmap);
         transparentMaskSprite = new Sprite(transparentMaskTexture);
+
+        //Initialize main frame buffer
+        mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 256, 240, false);
+        mainTextureRegion = new TextureRegion(mainFrameBuffer.getColorBufferTexture(), 0, 0,
+                256, 240);
+        mainTextureRegion.flip(false, true);
+        mainTextureRegion.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
         //Initialize special frame buffer for foreground sprites so
         //we can hide them with fake background sprites
@@ -180,19 +188,6 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         generatePalettes();
         paletteTexture.bind(1);
 
-        //Clear main framebuffer.
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        //Fill just the 256x240 viewport area with the current bg color
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin();
-        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(bgColor);
-        shapeRenderer.rect(0f, 0f, 256f, 240f);
-        shapeRenderer.end();
-
         if (ggvm.isBackgroundVisible()) {
 
             sortSprites();
@@ -212,17 +207,38 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
             foregroundSpritesFrameBuffer.end();
 
             viewPort.apply();
+            mainFrameBuffer.begin();
+                Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+                Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                //Draw background sprites, nametable, then blend
+                //the foreground sprites framebuffer to the main framebuffer.
+                spriteBatch.begin();
+                    spriteBatch.enableBlending();
+                    drawSprites(spriteBatch, backgroundSprites, isBgTransparentMask, foregroundSpritesCount);
+                    drawNametable(ggvm, spriteBatch);
+                    spriteBatch.setShader(null);
+                    spriteBatch.draw(foregroundSpritesTextureRegion, 0, 0);
+                    rasterEffectManager.render(spriteBatch);
+                spriteBatch.end();
+            mainFrameBuffer.end();
 
-            //Draw background sprites, nametable, then blend
-            //the foreground sprites framebuffer to the main framebuffer.
-            spriteBatch.setProjectionMatrix(camera.combined);
+            //Clear main framebuffer.
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+            Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            //Fill just the 256x240 viewport area with the current bg color
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin();
+            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(bgColor);
+            shapeRenderer.rect(0f, 0f, 256f, 240f);
+            shapeRenderer.end();
+
+            viewPort.apply();
             spriteBatch.begin();
-                spriteBatch.enableBlending();
-                drawSprites(spriteBatch, backgroundSprites, isBgTransparentMask, foregroundSpritesCount);
-                drawNametable(ggvm, spriteBatch);
-                spriteBatch.setShader(null);
-                spriteBatch.draw(foregroundSpritesTextureRegion, 0, 0);
-                rasterEffectManager.render(spriteBatch);
+                spriteBatch.draw(mainTextureRegion, 0, 0);
             spriteBatch.end();
         }
         fpsLogger.log();
@@ -498,16 +514,5 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
             }
         }
         patternTableTexture.draw(patternTablePixmap, 0, 0);
-    }
-
-    private void fixBleeding(TextureRegion textureRegion) {
-        float fix = 0.01f;
-        float x = textureRegion.getRegionX();
-        float y = textureRegion.getRegionY();
-        float width = textureRegion.getRegionWidth();
-        float height = textureRegion.getRegionHeight();
-        float invTexWidth = 1f / textureRegion.getTexture().getWidth();
-        float invTexHeight = 1f / textureRegion.getTexture().getHeight();
-        textureRegion.setRegion((x + fix) * invTexWidth, (y + fix) * invTexHeight, (x + width - fix) * invTexWidth, (y + height - fix) * invTexHeight); // Trims
     }
 }
