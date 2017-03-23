@@ -188,6 +188,19 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         generatePalettes();
         paletteTexture.bind(1);
 
+        //Clear main framebuffer.
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        //Fill just the 256x240 viewport area with the current bg color
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin();
+        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(bgColor);
+        shapeRenderer.rect(0f, 0f, 256f, 240f);
+        shapeRenderer.end();
+
         if (ggvm.isBackgroundVisible()) {
 
             sortSprites();
@@ -222,19 +235,6 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                     rasterEffectManager.render(spriteBatch);
                 spriteBatch.end();
             mainFrameBuffer.end();
-
-            //Clear main framebuffer.
-            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-            Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-            //Fill just the 256x240 viewport area with the current bg color
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin();
-            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(bgColor);
-            shapeRenderer.rect(0f, 0f, 256f, 240f);
-            shapeRenderer.end();
 
             viewPort.apply();
             spriteBatch.begin();
