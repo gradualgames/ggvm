@@ -23,15 +23,15 @@ import java.util.*;
  */
 public class TouchInputProcessor extends InputProcessorBase {
 
+    private static final int MAX_TOUCHES = 8;
+
     private GGVm ggvm;
     private StretchViewport overlayViewPort;
     private Camera overlayCamera;
     private ShapeRenderer shapeRenderer;
 
     private List<List<RectangleToButtonIndices>> rectangleToButtonIndicesList
-            = new ArrayList<List<RectangleToButtonIndices>>(
-                    Arrays.asList(new ArrayList<RectangleToButtonIndices>(),
-                                  new ArrayList<RectangleToButtonIndices>()));
+            = new ArrayList<List<RectangleToButtonIndices>>();
 
     private Vector3 screenPoint = new Vector3();
     private Vector3 touchPoint = new Vector3();
@@ -53,6 +53,7 @@ public class TouchInputProcessor extends InputProcessorBase {
         overlayViewPort = new StretchViewport(424, 240, overlayCamera);
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
+        initializeRectangleToButtonIndicesList();
         initializeTouchRectangles();
     }
 
@@ -76,6 +77,12 @@ public class TouchInputProcessor extends InputProcessorBase {
     @Override
     public void resize(int width, int height) {
         overlayViewPort.update(width, height);
+    }
+
+    private void initializeRectangleToButtonIndicesList() {
+        for(int i = 0; i < MAX_TOUCHES; i++) {
+            rectangleToButtonIndicesList.add(new ArrayList<RectangleToButtonIndices>());
+        }
     }
 
     private void initializeTouchRectangles() {
@@ -109,8 +116,9 @@ public class TouchInputProcessor extends InputProcessorBase {
         for(Integer buttonIndex: buttonIndices) {
             rectangleToButtonIndices.buttonIndices.add(buttonIndex);
         }
-        rectangleToButtonIndicesList.get(0).add(rectangleToButtonIndices);
-        rectangleToButtonIndicesList.get(1).add(rectangleToButtonIndices);
+        for(int i = 0; i < MAX_TOUCHES; i++) {
+            rectangleToButtonIndicesList.get(i).add(rectangleToButtonIndices);
+        }
     }
 
     @Override
@@ -150,13 +158,8 @@ public class TouchInputProcessor extends InputProcessorBase {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pointer < rectangleToButtonIndicesList.size()) {
-            screenPoint.set(screenX, screenY, 0);
-            touchPoint = overlayViewPort.unproject(screenPoint);
-
             for (RectangleToButtonIndices rectangleToButtonIndices : rectangleToButtonIndicesList.get(pointer)) {
-                if (rectangleToButtonIndices.rectangle.contains(touchPoint.x, touchPoint.y)) {
-                    rectangleToButtonIndices.pointerSet.remove(pointer);
-                }
+                rectangleToButtonIndices.pointerSet.remove(pointer);
             }
         }
         updateButtons();
