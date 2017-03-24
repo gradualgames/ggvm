@@ -34,7 +34,7 @@ APK, or an IPA.
 engine implementation from your game ROM (your soundtrack will
 be played as ogg, mp3 or wav files) Any casual hackers who
 successfully fill in your iNES header and run your game in an
-emulator will have wasted their time---no sound. If you are
+emulator will have wasted their time: no sound. If you are
 using any raster effects, these, too, can be omitted from the
 rom and adapted by customizing GGVm instead.
 
@@ -48,7 +48,7 @@ tested. iOS working just as well.
 controller subsystem.
 
 - Games must not rely on CPU for timing, only nmi (for example,
- Dushlan had used cpu for gameplay timing---I modified it to
+ Dushlan had used cpu for gameplay timing. I modified it to
  use nmis instead)
 
 - 6502 cpu core. Only write your game ONCE, for the NES!
@@ -65,13 +65,13 @@ controller subsystem.
 - You can leave out the iNES header and configure from GGVM,
 which discourages someone from extracting your rom.
 
-- Due to coding audio adapter, you can gut sound-engine. Thus
+- Due to coding audio adapter, you can gut your sound engine. Thus
  if anyone extracts your ROM, it'll have no audio and they
  wasted their time.
 
 - Mapper 0 and 2 supported, 4 coming soon
 
-- Live CHR-RAM streaming supported, currently performs best on PC.
+- Live CHR-RAM streaming supported
 
 - No undocumented cpu opcodes supported yet, but can add support
 
@@ -525,8 +525,8 @@ to listen to a write somewhere that controls the sound playback.
 
 Most handleOnRead implementations will look something like what
 you see in DushlanSoundtrackManager.java. It will just be a
-switch case which first inspects the address to see which rout-
-ine was called. Next, the soundtrack manager inspects the ram,
+switch case which first inspects the address to see which routine
+was called. Next, the soundtrack manager inspects the ram,
 registers, or even currently swapped bank (for currently
 supported mappers) to determine which song file to play back.
 
@@ -540,7 +540,7 @@ ways). Songs which have an intro and looping portion also need
 special treatment. An example of this special treatment is in
 DushlanSoundtrackManager.java. When an intro is played, a
 listener is installed on nmi to poll the current song for when
-it is completed---and then the looping portion of the song,
+it is completed. Then the looping portion of the song,
 initialized when the intro was played, is started and the nmi
 listener removed.
 
@@ -560,10 +560,10 @@ Another benefit is additional mixing. In a real NES game, sound
 effects typically cancel their corresponding apu channel. In
 GGVm, the sound effect will mix along with the music.
 
-A downside is the degree of control you have over audio play-
-back. GGVm supports most typical scenarios in use for NES
-homebrew games, but a highly advanced sound system may be
-difficult or impossible to fully replicate.
+A downside is the degree of control you have over audio playback.
+GGVm supports most typical scenarios in use for NES homebrew
+games, but a highly advanced sound system may be difficult or
+impossible to fully replicate.
 
 # Instructions for Creating a Custom RasterEffectManager
 
