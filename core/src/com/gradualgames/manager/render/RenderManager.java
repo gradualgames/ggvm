@@ -228,7 +228,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                 //the foreground sprites framebuffer to the main framebuffer.
                 spriteBatch.begin();
                     spriteBatch.enableBlending();
-                    drawSprites(spriteBatch, backgroundSprites, isBgTransparentMask, foregroundSpritesCount);
+                    drawSprites(spriteBatch, backgroundSprites, isBgTransparentMask, backgroundSpritesCount);
                     drawNametable(ggvm, spriteBatch);
                     spriteBatch.setShader(null);
                     spriteBatch.draw(foregroundSpritesTextureRegion, 0, 0);

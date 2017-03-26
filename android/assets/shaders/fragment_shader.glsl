@@ -5,10 +5,6 @@
 varying vec4 v_color;
 varying vec2 v_texCoords;
 uniform sampler2D u_paletteTexture;
-uniform vec3 u_color0;
-uniform vec3 u_color1;
-uniform vec3 u_color2;
-uniform vec3 u_color3;
 uniform sampler2D u_texture;
 uniform mat4 u_projTrans;
 
