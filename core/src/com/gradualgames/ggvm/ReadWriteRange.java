@@ -14,15 +14,45 @@ import java.io.OutputStream;
  */
 public interface ReadWriteRange {
 
+    /**
+     * Reads a signed byte from this object.
+     * @param address The address from which to read.
+     * @return A signed byte value.
+     */
     byte read(int address);
 
+    /**
+     * Writes a signed byte to this object.
+     * @param address The address to which to write.
+     * @param value A signed byte value to write.
+     */
     void write(int address, byte value);
 
+    /**
+     * The lower address, inclusive, of this ReadWriteRange object.
+     * @return The lower address.
+     */
     int lower();
 
+    /**
+     * The upper address, inclusive, of this ReadWriteRange object.
+     * @return The upper address.
+     */
     int upper();
 
+    /**
+     * Saves the state of this ReadWriteRange object.
+     * @param outputStream An output stream to which to write this ReadWriteRange object's data.
+     * @throws IOException
+     */
     void save(OutputStream outputStream) throws IOException;
 
+    /**
+     * Restores the state of this ReadWriteRange object. Assumes that the stream
+     * is being read in the correct order and that the state of this object was properly
+     * written when last saved.
+     * @param inputStream An input stream from which to restore the state of this ReadWriteRange object.
+     * @throws IOException
+     */
     void load(InputStream inputStream) throws IOException;
 }
