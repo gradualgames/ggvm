@@ -55,12 +55,23 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
     private static final int HEAP_INFO_COUNTER_RESET = 500;
     private int heapInfoCounter = HEAP_INFO_COUNTER_RESET;
 
+    /**
+     * Primary constructor.
+     * @param gameModule The game module to load.
+     * @param menuClass The Menu subclass to use (PCMenu.class or MobileMenu.class)
+     * @param inputProcessorClass The InputProcessorBase subclass to use.
+     */
     public GGVmApplication(GameModule gameModule, Class<? extends Menu> menuClass, Class<? extends InputProcessorBase> inputProcessorClass) {
         this.gameModule = gameModule;
         this.menuClass = menuClass;
         this.inputProcessorClass = inputProcessorClass;
     }
 
+    /**
+     * LibGDX lifecycle callback for application initialization. Initializes
+     * ggvm virtual machine, game-specific adapters, input processor, and
+     * menu. Loads last save state if present and starts the vm.
+     */
     @Override
     public void create() {
         Thread.currentThread().setUncaughtExceptionHandler(this);
@@ -105,6 +116,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         ggvm.start();
     }
 
+    /**
+     * LibGDX lifecycle callback for window resizing. Forwards this call to
+     * the RenderManager, Menu, and even InputProcessor since for touch we
+     * draw graphics on the screen to indicate buttons.
+     * @param width Width of the window in pixels.
+     * @param height Height of the window in pixels.
+     */
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
@@ -114,6 +132,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         menu.resize(width, height);
     }
 
+    /**
+     * LibGDX lifecycle callback for rendering every frame at 60fps. Forwards
+     * this call to the RenderManager, InputProcessor and Menu. Advances
+     * ggvm by running the nmi routine and then advances the main thread by
+     * 9000 instructions. This approximates the speed of a real NES. Finally,
+     * some logging is performed.
+     */
     @Override
     public void render() {
         renderManager.render(spriteBatch);
@@ -125,6 +150,10 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         logHeapInformation();
     }
 
+    /**
+     * LibGDX lifecycle callback for when the application id stroyed. Stops
+     * ggvm and saves the state of the game.
+     */
     @Override
     public void dispose() {
         Gdx.app.log(getClass().getSimpleName(), "dispose()");
@@ -188,6 +217,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         }
     }
 
+    /**
+     * Uncaught exception handler for the entire application. Used to dump
+     * cpu registers and log the exception message to a file so users can easily
+     * forward to the developer for a bug report.
+     * @param t The thread on which the exception was caught.
+     * @param e The throwable that was caught.
+     */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         ggvm.printRegisters();
@@ -196,11 +232,20 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         System.exit(-1);
     }
 
+    /**
+     * Callback from ggvm when it is determined that graphics should be generated
+     * for the entire pattern table.
+     */
     @Override
     public void onGeneratePatternTable() {
         renderManager.onGeneratePatternTable();
     }
 
+    /**
+     * Callback from ggvm when it is determined graphics should be generated for
+     * a single chr tile.
+     * @param patternAddress The vram address of the pattern to generate a tile for.
+     */
     @Override
     public void onGeneratePattern(int patternAddress) {
         renderManager.onGeneratePattern(patternAddress);

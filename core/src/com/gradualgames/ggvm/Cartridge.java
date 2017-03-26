@@ -28,6 +28,14 @@ public class Cartridge {
     /**
      * Configures a cartridge using predefined header data. This is used when we
      * strip the header from a game ROM to discourage casual hackers.
+     * @param prgRomCount The number of 16kb PRG-ROMs in the cartridge.
+     * @param chrRomCount The number of 8kb CHR-ROMs in the cartridge.
+     * @param mapper The mapper #. Will be used to select from supported mappers. See
+     *               configureMapper.
+     * @param mirroringMode The mirroring mode to use, MIRRORING_MODE_HORIZONTAL or
+     *                      MIRRORING_MODE_VERTICAL.
+     * @param bytes The actual bytes of the cartridge, including 16 bytes where the iNES
+     *              header would have been. With this constructor, that header can be zeroed out.
      */
     public Cartridge(int prgRomCount, int chrRomCount, int mapper, int mirroringMode, byte[] bytes) {
         this.prgRomCount = prgRomCount;
@@ -43,6 +51,7 @@ public class Cartridge {
      * format that defines PRG roms as 16kb in size and CHR roms as 8kb
      * in size. Each mapper can slice and dice these into smaller constituent
      * roms as appropriate.
+     * @param bytes All bytes of the cartridge including the 16 byte iNES header.
      */
     public Cartridge(byte[] bytes) {
         //Get ROM counts out of iNES header
@@ -58,6 +67,8 @@ public class Cartridge {
      * Process the data of a cartridge starting from a given address,
      * assuming that the cartridge specs have already been provided
      * (prgRomCount, chrRomCount, mapper, etc.)
+     * @param bytes The bytes of the cartridge.
+     * @param startAddress The address at which to begin processing data.
      */
     private void processData(byte[] bytes, int startAddress) {
         int address = startAddress;
@@ -86,22 +97,38 @@ public class Cartridge {
         }
     }
 
+    /**
+     * @return The mirroring mode, as MIRRORING_MODE_HORIZONTAL or
+     * MIRRORING_MODE_VERTICAL.
+     */
     public int getMirroringMode() {
         return mirroringMode;
     }
 
+    /**
+     * @return The number of PRG-ROMs in this cartridge.
+     */
     public int getPrgRomCount() {
         return prgRomCount;
     }
 
+    /**
+     * @return The number of CHR-ROMS in this cartridge.
+     */
     public int getChrRomCount() {
         return chrRomCount;
     }
 
+    /**
+     * @return The array of PRG-ROMs that were parsed from this cartridge.
+     */
     public Rom[] getPrgRoms() {
         return prgRoms;
     }
 
+    /**
+     * @return The array of CHR-ROMs that were parsed from this cartridge.
+     */
     public Rom[] getChrRoms() {
         return chrRoms;
     }
@@ -110,6 +137,7 @@ public class Cartridge {
      * Determines which mapper this cartridge is using from the iNES header
      * and then calls the appropriate mapper factory method to create a fully
      * configured mapper for this cartridge.
+     * @return Fully configured mapper as a ReadWriteRangeProvider.
      */
     public ReadWriteRangeProvider configureMapper() {
         if (mapper == 0) {
