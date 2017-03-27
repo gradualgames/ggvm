@@ -151,7 +151,29 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
     }
 
     /**
-     * LibGDX lifecycle callback for when the application id stroyed. Stops
+     * LibGDX lifecycle callback for pausing the application. Stops
+     * GGVm and saves current game state.
+     */
+    @Override
+    public void pause() {
+        super.pause();
+        ggvm.stop();
+        saveState();
+    }
+
+    /**
+     * LibGDX lifecycle callback for resuming the application. Loads
+     * previous game state and then starts GGVm.
+     */
+    @Override
+    public void resume() {
+        super.resume();
+        loadState();
+        ggvm.start();
+    }
+
+    /**
+     * LibGDX lifecycle callback for when the application is destroyed. Stops
      * ggvm and saves the state of the game.
      */
     @Override
