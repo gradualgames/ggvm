@@ -92,7 +92,7 @@ public class Controller implements ReadWriteRange {
      */
     @Override
     public void write(int address, byte value) {
-        if (value == 0 && lastWrittenValue == 1) {
+        if ((value & 1) == 0 && (lastWrittenValue & 1) == 1) {
             buttonIndex = 0;
         }
         lastWrittenValue = value;
