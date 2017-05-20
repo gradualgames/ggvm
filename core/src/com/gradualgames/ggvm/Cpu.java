@@ -715,7 +715,7 @@ public class Cpu {
 
             //cpx
             case 0xe0: //cpx #
-                value = bus.readSignedByte(++pc);
+                value = bus.readUnsignedByteAsInt(++pc);
                 //Unsigned comparison
                 if (x >= value) {
                     status_carry = 1;
@@ -734,7 +734,7 @@ public class Cpu {
                 break;
             case 0xe4: //cpx zp
                 address = bus.readUnsignedByteAsInt(++pc);
-                value = bus.readSignedByte(address);
+                value = bus.readUnsignedByteAsInt(address);
                 //Unsigned comparison
                 if (x >= value) {
                     status_carry = 1;
@@ -753,7 +753,7 @@ public class Cpu {
                 break;
             case 0xec: //cpx abs
                 address = bus.readUnsignedWordAsInt(++pc);
-                value = bus.readSignedByte(address);
+                value = bus.readUnsignedByteAsInt(address);
                 //Unsigned comparison
                 if (x >= value) {
                     status_carry = 1;
@@ -773,7 +773,7 @@ public class Cpu {
 
             //cpy
             case 0xc0: //cpy #
-                value = bus.readSignedByte(++pc);
+                value = bus.readUnsignedByteAsInt(++pc);
                 //Unsigned comparison
                 if (y >= value) {
                     status_carry = 1;
@@ -792,7 +792,7 @@ public class Cpu {
                 break;
             case 0xc4: //cpy zp
                 address = bus.readUnsignedByteAsInt(++pc);
-                value = bus.readSignedByte(address);
+                value = bus.readUnsignedByteAsInt(address);
                 //Unsigned comparison
                 if (y >= value) {
                     status_carry = 1;
@@ -811,7 +811,7 @@ public class Cpu {
                 break;
             case 0xcc: //cpy abs
                 address = bus.readUnsignedWordAsInt(++pc);
-                value = bus.readSignedByte(address);
+                value = bus.readUnsignedByteAsInt(address);
                 //Unsigned comparison
                 if (y >= value) {
                     status_carry = 1;
