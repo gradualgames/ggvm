@@ -395,7 +395,12 @@ public class Ppu implements ReadWriteRangeProvider {
 
         @Override
         public byte read(int address) {
-            if (readEnabled) {
+            int vramAddress = ppu2006.getVramAddress();
+            //The following block of code performs a dummy read when
+            //the vram address is not within the range of the palette.
+            //The dummy read is only performed once after changing the vram
+            //address.
+            if (readEnabled || (vramAddress >= BG_PALETTE_BASE_ADDRESS && vramAddress < BG_PALETTE_BASE_ADDRESS + 32)) {
                 byte value = ppuBus.readSignedByte(ppu2006.getVramAddress());
                 ppu2006.incVramAddress();
                 return value;
