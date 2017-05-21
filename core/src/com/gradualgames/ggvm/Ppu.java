@@ -77,6 +77,10 @@ public class Ppu implements ReadWriteRangeProvider {
 
     public boolean isBackgroundVisible() { return ppu2001.isBackgroundVisible(); }
 
+    public boolean isBackgroundClipping() { return ppu2001.isBackgroundClipping(); }
+
+    public boolean isSpriteClipping() { return ppu2001.isSpriteClipping(); }
+
     public boolean isMonochromeDisplayType() { return ppu2001.isMonochromeDisplayType(); }
 
     public int getScrollX() {
@@ -192,6 +196,10 @@ public class Ppu implements ReadWriteRangeProvider {
         public boolean isSpritesVisible() { return (ppu1control & PPU1_SPRITE_VISIBILITY) != 0; }
 
         public boolean isMonochromeDisplayType() { return (ppu1control & PPU1_DISPLAY_TYPE) != 0; }
+
+        public boolean isBackgroundClipping() { return (ppu1control & PPU1_BACKGROUND_CLIPPING) == 0; }
+
+        public boolean isSpriteClipping() { return (ppu1control & PPU1_SPRITE_CLIPPING) == 0; }
 
         @Override
         public byte read(int address) {

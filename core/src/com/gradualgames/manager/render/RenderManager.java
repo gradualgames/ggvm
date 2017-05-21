@@ -240,6 +240,15 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
             spriteBatch.begin();
                 spriteBatch.draw(mainTextureRegion, 0, 0);
             spriteBatch.end();
+
+            if (ggvm.isBackgroundClipping()) {
+                shapeRenderer.setProjectionMatrix(camera.combined);
+                shapeRenderer.begin();
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(bgColor);
+                shapeRenderer.rect(0f, 0f, 8f, 240f);
+                shapeRenderer.end();
+            }
         }
         fpsLogger.log();
     }

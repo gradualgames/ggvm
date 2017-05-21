@@ -311,18 +311,26 @@ public class GGVm implements BusListener {
     }
 
     /**
-     * Retrieves whether the background is enabled.
-     * @return
+     * @return Retrieves whether the background is enabled.
      */
     public boolean isBackgroundVisible() {
         return ppu.isBackgroundVisible();
     }
 
     /**
-     * Retrieves whether the display type is currently monochrome.
-     * @return
+     * @return Retrieves whether the display type is currently monochrome.
      */
     public boolean isMonochromeDisplayType() { return ppu.isMonochromeDisplayType(); }
+
+    /**
+     * @return Retrieves whether the leftmost 8 pixel wide column should be clipped for nametable rendering.
+     */
+    public boolean isBackgroundClipping() { return ppu.isBackgroundClipping(); }
+
+    /**
+     * @return Retrieves whether the leftmost 8 pixel wide column should be clipped for sprite rendering.
+     */
+    public boolean isSpriteClipping() { return ppu.isSpriteClipping(); }
 
     /**
      * Retrieves which pattern table to be used for generating background graphics.
