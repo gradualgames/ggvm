@@ -234,20 +234,40 @@ public class Ppu implements ReadWriteRangeProvider {
 
     private class Ppu2002 implements ReadWriteRange {
 
-        private static final int PPU_STATUS_IN_VBLANK = 0x80;
+        private static final int SPRITE_0_HIT_DECEPTION_LENGTH = 100;
+
+        private static final int PPU_STATUS_IN_VBLANK = 1 << 7;
+        private static final int PPU_STATUS_SPRITE_0_HIT = 1 << 6;
 
         private int status = 0;
+
+        private int sprite0HitDeceptionCounter = 0;
+
+        private boolean isSprite0Hit() { return (status & PPU_STATUS_SPRITE_0_HIT) != 0; }
 
         public void setInVblank() {
             this.status |= PPU_STATUS_IN_VBLANK;
         }
 
+        private void incrementSprite0HitDeceptionCounter() {
+            sprite0HitDeceptionCounter++;
+            if (sprite0HitDeceptionCounter == SPRITE_0_HIT_DECEPTION_LENGTH) {
+                sprite0HitDeceptionCounter = 0;
+                if (isSprite0Hit()) {
+                    status &= ~PPU_STATUS_SPRITE_0_HIT;
+                } else {
+                    status |= PPU_STATUS_SPRITE_0_HIT;
+                }
+            }
+        }
+
         @Override
         public byte read(int address) {
             int result = status;
-            status =  status & (~PPU_STATUS_IN_VBLANK);
+            status = status & (~PPU_STATUS_IN_VBLANK);
             ppu2005.writeX = true;
             ppu2006.writeHi = true;
+            incrementSprite0HitDeceptionCounter();
             return (byte) result;
         }
 
