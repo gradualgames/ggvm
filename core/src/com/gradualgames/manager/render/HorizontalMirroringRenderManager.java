@@ -36,7 +36,7 @@ public class HorizontalMirroringRenderManager extends RenderManager {
         int screenX = 0;
         int screenY = 8;
         int nameTableRowCount = fineScrollY == 0 ? 30 : 31;
-        int nameTableColumnCount = 32;
+        int nameTableColumnCount = 33;
         int nameTable;
 
         while (nameTableColumnCount > 0) {
