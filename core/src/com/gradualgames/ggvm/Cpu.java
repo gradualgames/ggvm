@@ -26,7 +26,7 @@ public class Cpu {
 
     public static final int VECTORS_ADDRESS = 0xfffa;
 
-    public static final int EMERGENCY_NMI_BREAK_INSTRUCTION_COUNT = 900;
+    public static final int EMERGENCY_NMI_BREAK_INSTRUCTION_COUNT = 2000;
 
     private CpuBus bus;
 
@@ -139,6 +139,19 @@ public class Cpu {
         return y;
     }
 
+    public int postDecSp() {
+        int result = sp;
+        sp = sp - 1;
+        if (sp == 255) sp = 511;
+        return result;
+    }
+
+    private int preIncSp() {
+        sp = sp + 1;
+        if (sp == 512) sp = 256;
+        return sp;
+    }
+
     private void printByte(String label, int address) {
         Gdx.app.log(getClass().getSimpleName(), label + ": " + bus.readUnsignedByteAsInt(address));
     }
@@ -186,8 +199,8 @@ public class Cpu {
         int returnPoint = pc - 1;
         int lo = returnPoint & 0xff;
         int hi = (returnPoint & 0xff00) >> 8;
-        bus.writeIntAsByte(sp--, hi);
-        bus.writeIntAsByte(sp--, lo);
+        bus.writeIntAsByte(postDecSp(), hi);
+        bus.writeIntAsByte(postDecSp(), lo);
 
         //Push processor flags, same logic as php
         int value = 0;
@@ -212,7 +225,7 @@ public class Cpu {
             value |= 1;
         }
 
-        bus.writeIntAsByte(sp--, value);
+        bus.writeIntAsByte(postDecSp(), value);
 
         //Now set pc to the nmi address
         pc = nmi;
@@ -1010,8 +1023,8 @@ public class Cpu {
                 int returnPoint = pc + 2;
                 lo = returnPoint & 0xff;
                 hi = (returnPoint & 0xff00) >> 8;
-                bus.writeIntAsByte(sp--, hi);
-                bus.writeIntAsByte(sp--, lo);
+                bus.writeIntAsByte(postDecSp(), hi);
+                bus.writeIntAsByte(postDecSp(), lo);
                 pc = bus.readUnsignedWordAsInt(++pc);
                 break;
 
@@ -1255,7 +1268,7 @@ public class Cpu {
 
             //pha
             case 0x48:
-                bus.writeIntAsByte(sp--, a);
+                bus.writeIntAsByte(postDecSp(), a);
                 pc++;
                 break;
 
@@ -1283,13 +1296,13 @@ public class Cpu {
                     value |= 1;
                 }
 
-                bus.writeIntAsByte(sp--, value);
+                bus.writeIntAsByte(postDecSp(), value);
                 pc++;
                 break;
 
             //pla
             case 0x68:
-                a = bus.readUnsignedByteAsInt(++sp);
+                a = bus.readUnsignedByteAsInt(preIncSp());
                 status_negative = (a & 0x80) == 0x80;
                 status_zero = a == 0;
                 pc++;
@@ -1297,7 +1310,7 @@ public class Cpu {
 
             //plp
             case 0x28:
-                value = bus.readUnsignedByteAsInt(++sp);
+                value = bus.readUnsignedByteAsInt(preIncSp());
                 if ((value & (1 << 6)) != 0) {
                     status_carry = 1;
                 } else {
@@ -1448,7 +1461,7 @@ public class Cpu {
 
             //rti
             case 0x40:
-                value = bus.readUnsignedByteAsInt(++sp);
+                value = bus.readUnsignedByteAsInt(preIncSp());
                 if ((value & (1 << 6)) != 0) {
                     status_carry = 1;
                 } else {
@@ -1481,15 +1494,15 @@ public class Cpu {
                 } else {
                     status_negative = false;
                 }
-                lo = bus.readUnsignedByteAsInt(++sp);
-                hi = bus.readUnsignedByteAsInt(++sp);
+                lo = bus.readUnsignedByteAsInt(preIncSp());
+                hi = bus.readUnsignedByteAsInt(preIncSp());
                 pc = ((hi << 8) | lo) + 1;
                 break;
 
             //rts
             case 0x60:
-                lo = bus.readUnsignedByteAsInt(++sp);
-                hi = bus.readUnsignedByteAsInt(++sp);
+                lo = bus.readUnsignedByteAsInt(preIncSp());
+                hi = bus.readUnsignedByteAsInt(preIncSp());
                 pc = ((hi << 8) | lo) + 1;
                 break;
 
@@ -1707,7 +1720,7 @@ public class Cpu {
 
             //tsx
             case 0xba:
-                x = sp;
+                x = sp - 0x100;
                 status_negative = (x & 0x80) == 0x80;
                 status_zero = x == 0;
                 pc++;
