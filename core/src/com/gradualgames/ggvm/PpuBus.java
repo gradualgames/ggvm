@@ -12,10 +12,10 @@ public class PpuBus extends Bus {
 
     public static final int MEMORY_MAP_SIZE = 0x4000;
 
-    public PpuBus(ReadWriteRangeProvider mapper, ReadWriteRangeNop readWriteRangeNop) {
-        super(BusType.PPU, MEMORY_MAP_SIZE, readWriteRangeNop);
+    public PpuBus(ReadWriteRangeProvider mapper, ReadWriteRangeWarning readWriteRangeWarning) {
+        super(BusType.PPU, MEMORY_MAP_SIZE, readWriteRangeWarning);
         add(mapper);
         //Fill all null entries with a no-op
-        fillNullEntries(readWriteRangeNop);
+        fillNullEntries(readWriteRangeWarning);
     }
 }

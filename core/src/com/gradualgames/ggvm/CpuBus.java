@@ -13,7 +13,7 @@ public class CpuBus extends Bus {
     /**
      * The size of the cpu's 64k memory map, plus an extra page for
      * logging warnings in case any instructions attempt to access a page
-     * past the end of the 64k address space. (ReadWriteRangeNop will fill
+     * past the end of the 64k address space. (ReadWriteRangeWarning will fill
      * all null entries and will log warnings any time read or written to).
      * This will not replicate the behavior of a real NES, where such behavior
      * will trample on ZP.
@@ -27,8 +27,8 @@ public class CpuBus extends Bus {
             ReadWriteRangeProvider ppu,
             ReadWriteRangeProvider apu,
             ReadWriteRangeProvider mapper,
-            ReadWriteRangeNop readWriteRangeNop) {
-        super(BusType.CPU, MEMORY_MAP_SIZE, readWriteRangeNop);
+            ReadWriteRangeWarning readWriteRangeWarning) {
+        super(BusType.CPU, MEMORY_MAP_SIZE, readWriteRangeWarning);
         //Map the ram object
         add(ram);
         //Map the controller object
@@ -43,6 +43,6 @@ public class CpuBus extends Bus {
         //Map the mapper!
         add(mapper);
         //Fill all null entries with a no-op
-        fillNullEntries(readWriteRangeNop);
+        fillNullEntries(readWriteRangeWarning);
     }
 }

@@ -51,9 +51,9 @@ public class GGVm implements BusListener {
 
     private Cpu cpu;
 
-    private ReadWriteRangeNop readWriteRangeNopCpu;
+    private ReadWriteRangeWarning readWriteRangeWarningCpu;
 
-    private ReadWriteRangeNop readWriteRangeNopPpu;
+    private ReadWriteRangeWarning readWriteRangeWarningPpu;
 
     private OnGeneratePatternTableListener onGeneratePatternTableListener;
 
@@ -72,11 +72,11 @@ public class GGVm implements BusListener {
         ReadWriteRangeProvider mapper = cartridge.configureMapper();
 
         //No-op objects to put on the cpu and ppu bus for warnings
-        readWriteRangeNopCpu = new ReadWriteRangeNop();
-        readWriteRangeNopPpu = new ReadWriteRangeNop();
+        readWriteRangeWarningCpu = new ReadWriteRangeWarning();
+        readWriteRangeWarningPpu = new ReadWriteRangeWarning();
 
         //Configure ppu and dependencies
-        ppuBus = new PpuBus(mapper, readWriteRangeNopPpu);
+        ppuBus = new PpuBus(mapper, readWriteRangeWarningPpu);
         ppu = new Ppu(ppuBus);
         //Listen for writes to CHR-RAM
         ppuBus.installBusEventGenerator(0, 0x2000, this);
@@ -86,14 +86,14 @@ public class GGVm implements BusListener {
         controller = new Controller();
         apu = new Apu();
         spriteRam = new SpriteRam();
-        cpuBus = new CpuBus(cpuRam, controller, spriteRam, ppu, apu, mapper, readWriteRangeNopCpu);
+        cpuBus = new CpuBus(cpuRam, controller, spriteRam, ppu, apu, mapper, readWriteRangeWarningCpu);
         cpu = new Cpu(cpuBus);
 
         //Configure warning generators
-        readWriteRangeNopCpu.setCpu(cpu);
-        readWriteRangeNopCpu.setBus(cpuBus);
-        readWriteRangeNopPpu.setCpu(cpu);
-        readWriteRangeNopPpu.setBus(ppuBus);
+        readWriteRangeWarningCpu.setCpu(cpu);
+        readWriteRangeWarningCpu.setBus(cpuBus);
+        readWriteRangeWarningPpu.setCpu(cpu);
+        readWriteRangeWarningPpu.setBus(ppuBus);
 
         cpu.reset();
     }
@@ -158,6 +158,18 @@ public class GGVm implements BusListener {
                 }
             }
         }
+    }
+
+    /**
+     * Installs a virtual register of one byte in size at the specified address. Whenever any
+     * reads or write occur here, all that happens is the BusListener's callbacks are called.
+     * This can be used to install "virtual registers" that only GGVm understands, for features such
+     * as split screens.
+     * @param address The address of the virtual register.
+     * @param busListener The listener for reads and writes from and to this register.
+     */
+    public void installVirtualRegister(int address, BusListener busListener) {
+        cpuBus.installVirtualRegister(address, busListener);
     }
 
     /**

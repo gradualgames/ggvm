@@ -40,19 +40,19 @@ public abstract class Bus {
      * was installed. Any reads or writes to this object will generate a warning in the log
      * file.
      */
-    protected ReadWriteRangeNop readWriteRangeNop;
+    protected ReadWriteRangeWarning readWriteRangeWarning;
 
     /**
-     * Constructor. Initializes the bus type, ReadWriteRangeNop (warning generator),
+     * Constructor. Initializes the bus type, ReadWriteRangeWarning (warning generator),
      * and memory map for this bus.
      * @param busType The bus type (Cpu or Ppu).
      * @param memoryMapSize The size of the memory map for this bus, in bytes.
-     * @param readWriteRangeNop The ReadWriteRangeNop (warning generator) to install on all
+     * @param readWriteRangeWarning The ReadWriteRangeWarning (warning generator) to install on all
      *                          null entries on the memory map.
      */
-    public Bus(BusType busType, int memoryMapSize, ReadWriteRangeNop readWriteRangeNop) {
+    public Bus(BusType busType, int memoryMapSize, ReadWriteRangeWarning readWriteRangeWarning) {
         this.busType = busType;
-        this.readWriteRangeNop = readWriteRangeNop;
+        this.readWriteRangeWarning = readWriteRangeWarning;
         memoryMap = new ReadWriteRange[memoryMapSize];
     }
 
@@ -115,7 +115,7 @@ public abstract class Bus {
     /**
      * Fills all null entries in the memory map with a readWriteRange object.
      * @param readWriteRange The ReadWriteRange object to fill all null entries with.
-     *                       Usually this will be a ReadWriteRangeNop object, which
+     *                       Usually this will be a ReadWriteRangeWarning object, which
      *                       generates warnings when reads or writes are detected on addresses
      *                       for which nothing else is configured.
      */
@@ -170,6 +170,19 @@ public abstract class Bus {
      */
     public void writeIntAsByte(int address, int value) {
         memoryMap[address].write(address, (byte) value);
+    }
+
+    /**
+     * Installs a virtual register of one byte in size at the specified address. Whenever any
+     * reads or write occur here, all that happens is the BusListener's callbacks are called.
+     * This can be used to install "virtual registers" that only GGVm understands, for features such
+     * as split screens.
+     * @param address The address of the virtual register.
+     * @param busListener The listener for reads and writes from and to this register.
+     */
+    public void installVirtualRegister(int address, BusListener busListener) {
+        BusEventGenerator busEventGenerator = new BusEventGenerator(address, 1, new ReadWriteRangeNop(), busListener);
+        memoryMap[address] = busEventGenerator;
     }
 
     /**

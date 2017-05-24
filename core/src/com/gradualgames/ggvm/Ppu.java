@@ -234,7 +234,7 @@ public class Ppu implements ReadWriteRangeProvider {
 
     private class Ppu2002 implements ReadWriteRange {
 
-        private static final int SPRITE_0_HIT_DECEPTION_LENGTH = 100;
+        private static final int SPRITE_0_HIT_DECEPTION_LENGTH = 4;
 
         private static final int PPU_STATUS_IN_VBLANK = 1 << 7;
         private static final int PPU_STATUS_SPRITE_0_HIT = 1 << 6;
