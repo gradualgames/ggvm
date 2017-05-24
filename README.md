@@ -637,3 +637,22 @@ has two such loops):
 ```
 See? Not too bad. And now a whole class of nmi related bugs your
 game may have exhibited in ggvm cannot happen.
+
+# Virtual Registers Reference
+
+GGVm provides a few additional registers on the cpu bus to enable
+additional functionality. These are necessary since GGVm is not a
+full NES emulator by design.
+
+### Sprite 0 Hit Status Bar Register
+
+Address: $5500
+
+Usage: Write a nonzero value to turn on the sprite 0 hit status bar.
+Write a value of 0 to turn off the sprite 0 hit status bar.
+
+Behavior: For games using horizontal mirroring (at the moment), the
+nametable above sprite 0's Y coordinate will be rendered at scroll
+position 0, 0. Below sprite 0's Y coordinate, the scroll will be
+rendered at the current scroll position in ppu register $2005.
+
