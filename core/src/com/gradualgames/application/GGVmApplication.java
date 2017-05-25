@@ -248,8 +248,10 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        ggvm.printRegisters();
-        Gdx.app.log(getClass().getSimpleName(), "Bank: " + ggvm.getLowerPrgBank());
+        if (ggvm != null) {
+            ggvm.printRegisters();
+            Gdx.app.log(getClass().getSimpleName(), "Bank: " + ggvm.getLowerPrgBank());
+        }
         Gdx.app.error(getClass().getSimpleName(), e.getMessage(), e);
         System.exit(-1);
     }
