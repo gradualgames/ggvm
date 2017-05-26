@@ -658,7 +658,5 @@ rendered at the current scroll position in ppu register $2005.
 
 NOTE: To use this feature, it is highly recommended to remove actual
 usage of Sprite 0 Hit from your game's ROM prior to using it with
-ggvm. GGVm will spoof the sprite 0 hit flag in the ppu status
-register at $2002 (bit 6), but the behavior will not be anything like
-on the NES.
-
+ggvm. The Sprite 0 Hit bit in GGVm's PPU never activates; expect your
+game to freeze execution if it is using Sprite 0 Hit normally.
