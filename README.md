@@ -491,104 +491,6 @@ public class MyTitleGameModule implements GameModule {
     }
 }
 ```
-# Instructions for Creating a Custom SoundtrackManager
-
-A gamemodule must at least provide an anonymous inner class
-with a no-op SoundtrackManager extension, as shown in the
-above section. However, if you want music and sound to play back
-in your game, you need to implement the SoundtrackManager.
-Dushlan has a SoundtrackManager you can look at for an example
-of what you will need to do.
-
-dushlan/src/com/gradualgames/manager/soundtrack/DushlanSoundtrackManager.java
-
-A SoundtrackManager listens to several key locations in a game's
-rom. These locations typically will be sound engine routines,
-such as routines which play music, sfx, stop, pause, or other
-functionality. The constructor of the SoundtrackManager will
-install listeners to these locations, something like this from
-DushlanSoundtrackManager.java:
-
-ggvm.installBusEventGenerator(play_song, 1, this);
-
-This says that any time the address play_song (defined as an int
-elsewhere in the class) is executed, call into this soundtrack
-manager with that address.
-
-All the callbacks from these listeners will go into two methods,
-handleOnRead and handleOnWrite, which are abstract in the
-SoundtrackManager.java base class, forcing you to override both.
-
-Typically you will only need to work with handleOnRead, but
-there may be special scenarios in some games which require you
-to listen to a write somewhere that controls the sound playback.
-
-Most handleOnRead implementations will look something like what
-you see in DushlanSoundtrackManager.java. It will just be a
-switch case which first inspects the address to see which routine
-was called. Next, the soundtrack manager inspects the ram,
-registers, or even currently swapped bank (for currently
-supported mappers) to determine which song file to play back.
-
-There are several methods in the base class of
-SoundtrackManager.java for sound playback. The main ones you
-will be using are playSong and playSfx. playSong optionally
-allows you to play a song once or loop it. Depending on the
-game, you may need to implement additional logic to support
-pause and resume (different games accomplish this in different
-ways). Songs which have an intro and looping portion also need
-special treatment. An example of this special treatment is in
-DushlanSoundtrackManager.java. When an intro is played, a
-listener is installed on nmi to poll the current song for when
-it is completed. Then the looping portion of the song,
-initialized when the intro was played, is started and the nmi
-listener removed.
-
-Why are we doing things this way with GGVm? A couple of reasons.
-One is we did not want to bother emulating the APU, and another
-is we wanted as much performance as possible, so the only thing
-that is cpu intensive at all is the 6502 cpu simulation, which
-turns out not to be all that time-consuming.
-
-A benefit to forcing the developer to write a soundtrack manager
-is, you can remove everything but rts from your game ROM's
-sound engine before publishing. This means anybody who tries to
-pull your ROM out of your jar or apk and succeeds will have a
-broken rom with no sound, and they wasted their time.
-
-Another benefit is additional mixing. In a real NES game, sound
-effects typically cancel their corresponding apu channel. In
-GGVm, the sound effect will mix along with the music.
-
-A downside is the degree of control you have over audio playback.
-GGVm supports most typical scenarios in use for NES homebrew
-games, but a highly advanced sound system may be difficult or
-impossible to fully replicate.
-
-# Instructions for Creating a Custom RasterEffectManager
-
-This is a largely experimental area of GGVm. The original idea
-of RasterEffectManager was to be able to support scanline based
-effects of the Ppu, since GGVm does not emulate the Ppu scanline
-per scanline. It is in use in my own game, The Legends of Owlia,
-by drawing a single black rectangle at the top of the screen
-which is 16 scanline high. In the actual NES game, this was
-done using precise vblank timing and empty cpu spin loops before
-turning graphics on. In GGVm, I can replicate this behavior just
-by drawing a black rectangle at the top of the screen to hide
-scrolling updates.
-
-For real raster effects, such as split screens, it is likely
-that you will need to extend HorizontalMirroringRenderManager
-or VerticalMirroringRenderManager, and then inspect cpu
-registers and ram similar to how SoundtrackManager works to find
-out where split points are, and then render the nametable in
-a top and a bottom section. It is also likely you will need to
-use fbos to do this. I'm planning to do something like this for
-my current game, so I will be diving into this at some point in
-the future. I'm also open to contributions if anybody wants to
-dive in to this.
-
 # Instructions for Creating an NmiSafeFunctor
 
 These are optional, but often are very helpful for making sure
@@ -685,15 +587,15 @@ of sound effects. Here's an example of how to use this manager.
 As a result of using this manager, six new registers will be available
 on the cpu bus for your game ROM to utilize. Here they are:
 
-$5600 - Plays a song from the song list.
+$5600 - Write a single byte to play a song from the song list.
 
-$5601 - Plays a sfx from the sfx list.
+$5601 - Write a single byte to play a sfx from the sfx list.
 
-$5602 - Pauses current music.
+$5602 - Write a byte of any value to pause current music.
 
-$5603 - Resumes current music.
+$5603 - Write a byte of any value to resume current music.
 
-$5604 - Stops all music.
+$5604 - Write a byte of any value to stop all music.
 
 There is also one status register available to determine if music is still playing.
 Since the audio subsystems on some devices on some platforms (Particularly Android's
@@ -701,3 +603,106 @@ audio subsystem can be unreliable on some devices) it is NOT recommended to use 
 Please avoid it at all costs. You have been warned.
 
 $5605 - Reads 1 if music is playing, 0 if not.
+
+# Instructions for Creating a Custom SoundtrackManager
+
+Note that creating your own custom SoundtrackManager is no longer
+recommended. The easiest way to use GGVm's audio capabilities is
+to use the special virtual audio registers documented above, via
+GGVmSoundtrackManager.
+
+A gamemodule must at least provide an anonymous inner class
+with a no-op SoundtrackManager extension, as shown in the
+above section. However, if you want music and sound to play back
+in your game, you need to implement the SoundtrackManager.
+Dushlan has a SoundtrackManager you can look at for an example
+of what you will need to do.
+
+dushlan/src/com/gradualgames/manager/soundtrack/DushlanSoundtrackManager.java
+
+A SoundtrackManager listens to several key locations in a game's
+rom. These locations typically will be sound engine routines,
+such as routines which play music, sfx, stop, pause, or other
+functionality. The constructor of the SoundtrackManager will
+install listeners to these locations, something like this from
+DushlanSoundtrackManager.java:
+
+ggvm.installBusEventGenerator(play_song, 1, this);
+
+This says that any time the address play_song (defined as an int
+elsewhere in the class) is executed, call into this soundtrack
+manager with that address.
+
+All the callbacks from these listeners will go into two methods,
+handleOnRead and handleOnWrite, which are abstract in the
+SoundtrackManager.java base class, forcing you to override both.
+
+Typically you will only need to work with handleOnRead, but
+there may be special scenarios in some games which require you
+to listen to a write somewhere that controls the sound playback.
+
+Most handleOnRead implementations will look something like what
+you see in DushlanSoundtrackManager.java. It will just be a
+switch case which first inspects the address to see which routine
+was called. Next, the soundtrack manager inspects the ram,
+registers, or even currently swapped bank (for currently
+supported mappers) to determine which song file to play back.
+
+There are several methods in the base class of
+SoundtrackManager.java for sound playback. The main ones you
+will be using are playSong and playSfx. playSong optionally
+allows you to play a song once or loop it. Depending on the
+game, you may need to implement additional logic to support
+pause and resume (different games accomplish this in different
+ways). Songs which have an intro and looping portion also need
+special treatment. An example of this special treatment is in
+DushlanSoundtrackManager.java. When an intro is played, a
+listener is installed on nmi to poll the current song for when
+it is completed. Then the looping portion of the song,
+initialized when the intro was played, is started and the nmi
+listener removed.
+
+Why are we doing things this way with GGVm? A couple of reasons.
+One is we did not want to bother emulating the APU, and another
+is we wanted as much performance as possible, so the only thing
+that is cpu intensive at all is the 6502 cpu simulation, which
+turns out not to be all that time-consuming.
+
+A benefit to forcing the developer to write a soundtrack manager
+is, you can remove everything but rts from your game ROM's
+sound engine before publishing. This means anybody who tries to
+pull your ROM out of your jar or apk and succeeds will have a
+broken rom with no sound, and they wasted their time.
+
+Another benefit is additional mixing. In a real NES game, sound
+effects typically cancel their corresponding apu channel. In
+GGVm, the sound effect will mix along with the music.
+
+A downside is the degree of control you have over audio playback.
+GGVm supports most typical scenarios in use for NES homebrew
+games, but a highly advanced sound system may be difficult or
+impossible to fully replicate.
+
+# Instructions for Creating a Custom RasterEffectManager
+
+This is a largely experimental area of GGVm. The original idea
+of RasterEffectManager was to be able to support scanline based
+effects of the Ppu, since GGVm does not emulate the Ppu scanline
+per scanline. It is in use in my own game, The Legends of Owlia,
+by drawing a single black rectangle at the top of the screen
+which is 16 scanline high. In the actual NES game, this was
+done using precise vblank timing and empty cpu spin loops before
+turning graphics on. In GGVm, I can replicate this behavior just
+by drawing a black rectangle at the top of the screen to hide
+scrolling updates.
+
+For real raster effects, such as split screens, it is likely
+that you will need to extend HorizontalMirroringRenderManager
+or VerticalMirroringRenderManager, and then inspect cpu
+registers and ram similar to how SoundtrackManager works to find
+out where split points are, and then render the nametable in
+a top and a bottom section. It is also likely you will need to
+use fbos to do this. I'm planning to do something like this for
+my current game, so I will be diving into this at some point in
+the future. I'm also open to contributions if anybody wants to
+dive in to this.
