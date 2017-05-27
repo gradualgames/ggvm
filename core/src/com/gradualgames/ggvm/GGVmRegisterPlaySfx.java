@@ -1,5 +1,8 @@
 package com.gradualgames.ggvm;
 
+import com.gradualgames.manager.soundtrack.GGVmSoundtrackManager;
+import com.gradualgames.manager.soundtrack.SoundtrackManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,20 +10,16 @@ import java.io.OutputStream;
 /**
  * Created by derek on 5/27/2017.
  *
- * This virtual register just accepts writes and stores a value for whether GGVm's
- * Sprite 0 Hit status bar feature is enabled.
+ * This ggvm register, located at 0x5601 on the cpu bus, plays a sfx by
+ * forwarding the value written to a GGVmSoundtrackManager.
  */
-public class VirtualRegisterStatusBar implements ReadWriteRange {
+public class GGVmRegisterPlaySfx implements ReadWriteRange {
 
-    public boolean isSprite0HitStatusBarEnabled() {
-        return sprite0HitStatusBarEnabled;
+    private GGVmSoundtrackManager ggVmSoundtrackManager;
+
+    public GGVmRegisterPlaySfx(GGVmSoundtrackManager ggVmSoundtrackManager) {
+        this.ggVmSoundtrackManager = ggVmSoundtrackManager;
     }
-
-    public void setSprite0HitStatusBarEnabled(boolean sprite0HitStatusBarEnabled) {
-        this.sprite0HitStatusBarEnabled = sprite0HitStatusBarEnabled;
-    }
-
-    private boolean sprite0HitStatusBarEnabled = false;
 
     @Override
     public byte read(int address) {
@@ -29,17 +28,17 @@ public class VirtualRegisterStatusBar implements ReadWriteRange {
 
     @Override
     public void write(int address, byte value) {
-        sprite0HitStatusBarEnabled = value != 0;
+        ggVmSoundtrackManager.playSfxNum(value & 0xff);
     }
 
     @Override
     public int lower() {
-        return 0x5500;
+        return 0x5601;
     }
 
     @Override
     public int upper() {
-        return 0x5500;
+        return 0x5601;
     }
 
     @Override

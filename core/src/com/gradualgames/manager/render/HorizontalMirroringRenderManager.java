@@ -1,12 +1,10 @@
 package com.gradualgames.manager.render;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.gradualgames.ggvm.BusListener;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.ggvm.Ppu;
-import com.gradualgames.ggvm.VirtualRegisterStatusBar;
+import com.gradualgames.ggvm.GGVmRegisterStatusBar;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 
 /**
@@ -17,7 +15,7 @@ import com.gradualgames.manager.rastereffect.RasterEffectManager;
  */
 public class HorizontalMirroringRenderManager extends RenderManager {
 
-    private VirtualRegisterStatusBar virtualRegisterStatusBar = new VirtualRegisterStatusBar();
+    private GGVmRegisterStatusBar GGVmRegisterStatusBar = new GGVmRegisterStatusBar();
 
     public HorizontalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
         super(ggvm, rasterEffectManager);
@@ -25,12 +23,12 @@ public class HorizontalMirroringRenderManager extends RenderManager {
 
     public HorizontalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager, boolean statusBarEnabled) {
         this(ggvm, rasterEffectManager);
-        if (statusBarEnabled) ggvm.installReadWriteRange(virtualRegisterStatusBar);
+        if (statusBarEnabled) ggvm.installReadWriteRange(GGVmRegisterStatusBar);
     }
 
     @Override
     public void drawNametable(GGVm ggvm, SpriteBatch spriteBatch) {
-        if (virtualRegisterStatusBar.isSprite0HitStatusBarEnabled()) {
+        if (GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled()) {
             drawNametable(ggvm, spriteBatch, 0, 0, 0, ggvm.getSpriteY(0));
             drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), ggvm.getSpriteY(0), 240f);
         } else {
@@ -85,7 +83,7 @@ public class HorizontalMirroringRenderManager extends RenderManager {
                 int indexColumn = index & 0x0f;
                 Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                 sprite.setColor(0, attributes[attribute], 0, 0);
-                if (!virtualRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
+                if (!GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
                     sprite.setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);
                     sprite.draw(spriteBatch);
                 }

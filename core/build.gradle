@@ -12,7 +12,8 @@ task deleteFiles {
     FileTree tree = fileTree(dir: '../core/src/')
     tree.visit { FileVisitDetails file ->
         if (file.name.contains("SoundtrackManager.java") &&
-            !file.name.equals("SoundtrackManager.java")) {
+            !(file.name.equals("SoundtrackManager.java") ||
+              file.name.equals("GGVmSoundtrackManager.java"))) {
             delete file.file.absolutePath
         } else if (file.name.contains("GameModule.java") &&
                 !file.name.equals("GameModule.java")) {
