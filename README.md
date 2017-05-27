@@ -414,7 +414,8 @@ import com.gradualgames.manager.nmi.NmiSafeFunctor;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 import com.gradualgames.manager.render.RenderManager;
 import com.gradualgames.manager.render.VerticalMirroringRenderManager;
-import com.gradualgames.manager.soundtrack.SoundtrackManager;
+import com.gradualgames.manager.soundtrack.SongInfo;
+import com.gradualgames.manager.soundtrack.GGVmSoundtrackManager;
 
 /**
  * Created by derek on 1/17/2017.
@@ -467,17 +468,18 @@ public class MyTitleGameModule implements GameModule {
 
     @Override
     public SoundtrackManager provideSoundtrackManager(GGVm ggvm) {
-        return new SoundtrackManager("mytitle", ggvm) {
-            @Override
-            protected void handleOnRead(int address) {
+        List<SongInfo> songList = new ArrayList<SongInfo>();
+        //Note this is sample data. Modify this list with your own paths.
+        songList.add(new SongInfo("game/music/song_intro.mp3", "game/music/song.mp3", true));
 
-            }
+        //Note this is sample data. Modify this list with your own paths.
+        List<String> sfxList = new ArrayList<String>();
+        sfxList.add("game/sfx/sfx00.mp3");
 
-            @Override
-            protected void handleOnWrite(int address, byte value) {
-
-            }
-        };
+        //This is the recommended SoundtrackManager class to use. You may also
+        //write your own. See the Audio Playback Registers section for how to
+        //use this manager to play back the songs and sfx in the two lists above.
+        return new GGVmSoundtrackManager("game", ggvm, songList, sfxList);
     }
 
     @Override
@@ -575,11 +577,16 @@ of sound effects. Here's an example of how to use this manager.
     @Override
     public SoundtrackManager provideSoundtrackManager(GGVm ggvm) {
         List<SongInfo> songList = new ArrayList<SongInfo>();
-        songList.add(new SongInfo("game/music/SONG-outdoor-intro.mp3", "game/music/SONG-outdoor.mp3", true));
+        //Note this is sample data. Modify this list with your own paths.
+        songList.add(new SongInfo("game/music/song_intro.mp3", "game/music/song.mp3", true));
 
+        //Note this is sample data. Modify this list with your own paths.
         List<String> sfxList = new ArrayList<String>();
-        sfxList.add("game/sfx/SFX-00.mp3");
+        sfxList.add("game/sfx/sfx00.mp3");
 
+        //This is the recommended SoundtrackManager class to use. You may also
+        //write your own. See the Audio Playback Registers section for how to
+        //use this manager to play back the songs and sfx in the two lists above.
         return new GGVmSoundtrackManager("game", ggvm, songList, sfxList);
     }
 ```
