@@ -686,9 +686,13 @@ As a result of using this manager, six new registers will be available
 on the cpu bus for your game ROM to utilize. Here they are:
 
 $5600 - Plays a song from the song list.
+
 $5601 - Plays a sfx from the sfx list.
+
 $5602 - Pauses current music.
+
 $5603 - Resumes current music.
+
 $5604 - Stops all music.
 
 There is also one status register available to determine if music is still playing.
