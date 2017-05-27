@@ -15,7 +15,7 @@ quickly enough to return to creating homebrew games. In
 addition, this allowed us to take large shortcuts in how the
 system is emulated, which enables games to run smoothly at 60
 fps with little or no stuttering even on somewhat old Android
-devices. Please read the feature list below to get an idea of
+devices. Please read the feature list to get an idea of
 what GGVm's capabilities are.
 
 # Project Mission Statement
@@ -209,7 +209,7 @@ is used as an example.
 
 dushlan/dushlan.nes:
 Not optional. This is the game's rom. The name can be anything,
-see the section below about creating a GameModule.
+see the section about creating a GameModule.
 
 dushlan/icon:
 
@@ -613,7 +613,7 @@ GGVmSoundtrackManager.
 
 A gamemodule must at least provide an anonymous inner class
 with a no-op SoundtrackManager extension, as shown in the
-above section. However, if you want music and sound to play back
+GameModule section. However, if you want music and sound to play back
 in your game, you need to implement the SoundtrackManager.
 Dushlan has a SoundtrackManager you can look at for an example
 of what you will need to do.
@@ -715,7 +715,7 @@ is what you should do.
 - The game totally freezes.
     - Are you using Sprite 0 Hit? GGVm does not natively support this
 bit. It does however support Sprite 0 Hit based status bars via a
-special register. See Virtual Registers Reference below.
+special register. See Virtual Registers Reference.
 
 - Inexplicable odd behavior, glitches, etc.
     - There are a couple of things that can cause this. The most likely
