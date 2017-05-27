@@ -82,32 +82,6 @@ which discourages someone from extracting your rom.
 
 - Windowed or fullscreen mode
 
-# Gotchas
-
-If any of the following happen when you try your ROM in GGVm, here
-is what you should do.
-
-- The game totally freezes.
-    - Are you using Sprite 0 Hit? GGVm does not natively support this
-bit. It does however support Sprite 0 Hit based status bars via a
-special register. See Virtual Registers Reference below.
-
-- Inexplicable odd behavior, glitches, etc.
-    - There are a couple of things that can cause this. The most likely
-thing is that your game was tuned to the precise timing of an NES,
-and nmi is stepping on something and causing chaos. It is recommended
-to make your game as robust as possible, but if you would prefer to
-leave your NES rom unmodified, see the section on creating an NmiSafetyFunctor
-below, it can work around many issues like this.
-    - Another possibility is that your game is attempting to detect NTSC,
-Pal or Dendy. GGVm will cause incorrect detection in this type of code. You
-will need to modify your ROM to force the tv type to NTSC, since GGVM operates
-at 60 fps. Depending on the game, tvSystem may be used to look up different
-speed values etc.
-
-- Something else?
-    - Please log an issue on GGVm's Github page.
-
 # Supported Platforms
 
 Games can be packaged up for the following platforms:
@@ -732,3 +706,29 @@ use fbos to do this. I'm planning to do something like this for
 my current game, so I will be diving into this at some point in
 the future. I'm also open to contributions if anybody wants to
 dive in to this.
+
+# Gotchas
+
+If any of the following happen when you try your ROM in GGVm, here
+is what you should do.
+
+- The game totally freezes.
+    - Are you using Sprite 0 Hit? GGVm does not natively support this
+bit. It does however support Sprite 0 Hit based status bars via a
+special register. See Virtual Registers Reference below.
+
+- Inexplicable odd behavior, glitches, etc.
+    - There are a couple of things that can cause this. The most likely
+thing is that your game was tuned to the precise timing of an NES,
+and nmi is stepping on something and causing chaos. It is recommended
+to make your game as robust as possible, but if you would prefer to
+leave your NES rom unmodified, see the section on creating an NmiSafetyFunctor
+below, it can work around many issues like this.
+    - Another possibility is that your game is attempting to detect NTSC,
+Pal or Dendy. GGVm will cause incorrect detection in this type of code. You
+will need to modify your ROM to force the tv type to NTSC, since GGVM operates
+at 60 fps. Depending on the game, tvSystem may be used to look up different
+speed values etc.
+
+- Something else?
+    - Please log an issue on GGVm's Github page.
