@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.BusListener;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.ggvm.Ppu;
+import com.gradualgames.ggvm.VirtualRegisterStatusBar;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 
 /**
@@ -14,35 +15,26 @@ import com.gradualgames.manager.rastereffect.RasterEffectManager;
  * This class draws the background using nametables at $2000 and $2800. See
  * RenderManager for a high level description of how backgrounds are drawn.
  */
-public class HorizontalMirroringRenderManager extends RenderManager implements BusListener {
+public class HorizontalMirroringRenderManager extends RenderManager {
 
-    private boolean sprite0HitStatusBarEnabled = false;
-
-    private boolean sprite0HitStatusBarOn = false;
+    private VirtualRegisterStatusBar virtualRegisterStatusBar = new VirtualRegisterStatusBar();
 
     public HorizontalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
         super(ggvm, rasterEffectManager);
     }
 
-    public HorizontalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager, boolean sprite0HitStatusBarEnabled) {
+    public HorizontalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager, boolean statusBarEnabled) {
         this(ggvm, rasterEffectManager);
-        this.sprite0HitStatusBarEnabled = sprite0HitStatusBarEnabled;
-        if (this.sprite0HitStatusBarEnabled) {
-            ggvm.installVirtualRegister(0x5500, this);
-        }
+        if (statusBarEnabled) ggvm.installReadWriteRange(virtualRegisterStatusBar);
     }
 
     @Override
     public void drawNametable(GGVm ggvm, SpriteBatch spriteBatch) {
-        if (!sprite0HitStatusBarEnabled) {
-            drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), 0f, 240f);
+        if (virtualRegisterStatusBar.isSprite0HitStatusBarEnabled()) {
+            drawNametable(ggvm, spriteBatch, 0, 0, 0, ggvm.getSpriteY(0));
+            drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), ggvm.getSpriteY(0), 240f);
         } else {
-            if (sprite0HitStatusBarOn) {
-                drawNametable(ggvm, spriteBatch, 0, 0, 0, ggvm.getSpriteY(0));
-                drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), ggvm.getSpriteY(0), 240f);
-            } else {
-                drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), 0f, 240f);
-            }
+            drawNametable(ggvm, spriteBatch, ggvm.getScrollX(), ggvm.getScrollY(), 0f, 240f);
         }
     }
 
@@ -93,7 +85,7 @@ public class HorizontalMirroringRenderManager extends RenderManager implements B
                 int indexColumn = index & 0x0f;
                 Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                 sprite.setColor(0, attributes[attribute], 0, 0);
-                if (!(sprite0HitStatusBarEnabled && sprite0HitStatusBarOn) || (screenY >= splitYStart && screenY < splitYEnd)) {
+                if (!virtualRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
                     sprite.setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);
                     sprite.draw(spriteBatch);
                 }
@@ -104,22 +96,6 @@ public class HorizontalMirroringRenderManager extends RenderManager implements B
             screenX += 8;
             nameTableX++;
             nameTableColumnCount--;
-        }
-    }
-
-    @Override
-    public void onRead(int address) {
-        //Intentionally left blank.
-    }
-
-    @Override
-    public void onWrite(int address, byte value) {
-        if (address == 0x5500) {
-            if (value != 0) {
-                sprite0HitStatusBarOn = true;
-            } else {
-                sprite0HitStatusBarOn = false;
-            }
         }
     }
 }

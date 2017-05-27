@@ -161,15 +161,13 @@ public class GGVm implements BusListener {
     }
 
     /**
-     * Installs a virtual register of one byte in size at the specified address. Whenever any
-     * reads or write occur here, all that happens is the BusListener's callbacks are called.
-     * This can be used to install "virtual registers" that only GGVm understands, for features such
-     * as split screens.
-     * @param address The address of the virtual register.
-     * @param busListener The listener for reads and writes from and to this register.
+     * Replaces a location on the memory map with a ReadWriteRange object. Use this with
+     * care, if it is used to replace a vital component on the bus the behavior will be
+     * undefined. Typically this will be used to add GGVm virtual registers for controlling
+     * split screens and audio playback.
      */
-    public void installVirtualRegister(int address, BusListener busListener) {
-        cpuBus.installVirtualRegister(address, busListener);
+    public void installReadWriteRange(ReadWriteRange readWriteRange) {
+        cpuBus.add(readWriteRange);
     }
 
     /**
