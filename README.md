@@ -660,3 +660,40 @@ NOTE: To use this feature, it is highly recommended to remove actual
 usage of Sprite 0 Hit from your game's ROM prior to using it with
 ggvm. The Sprite 0 Hit bit in GGVm's PPU never activates; expect your
 game to freeze execution if it is using Sprite 0 Hit normally.
+
+### Audio Playback Registers
+
+These registers will be installed on the cpuBus if you provide a
+GGVmSoundtrackManager from your GameModule. GGVmSoundtrackManager must
+be initialized with a list of SongInfo objects describing intro and
+looping portions of songs, and a list of strings describing the paths
+of sound effects. Here's an example of how to use this manager.
+
+```
+    @Override
+    public SoundtrackManager provideSoundtrackManager(GGVm ggvm) {
+        List<SongInfo> songList = new ArrayList<SongInfo>();
+        songList.add(new SongInfo("game/music/SONG-outdoor-intro.mp3", "game/music/SONG-outdoor.mp3", true));
+
+        List<String> sfxList = new ArrayList<String>();
+        sfxList.add("game/sfx/SFX-00.mp3");
+
+        return new GGVmSoundtrackManager("game", ggvm, songList, sfxList);
+    }
+```
+
+As a result of using this manager, six new registers will be available
+on the cpu bus for your game ROM to utilize. Here they are:
+
+$5600 - Plays a song from the song list.
+$5601 - Plays a sfx from the sfx list.
+$5602 - Pauses current music.
+$5603 - Resumes current music.
+$5604 - Stops all music.
+
+There is also one status register available to determine if music is still playing.
+Since the audio subsystems on some devices on some platforms (Particularly Android's
+audio subsystem can be unreliable on some devices) it is NOT recommended to use this register.
+Please avoid it at all costs. You have been warned.
+
+$5605 - Reads 1 if music is playing, 0 if not.
