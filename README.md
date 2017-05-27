@@ -722,8 +722,8 @@ special register. See Virtual Registers Reference below.
 thing is that your game was tuned to the precise timing of an NES,
 and nmi is stepping on something and causing chaos. It is recommended
 to make your game as robust as possible, but if you would prefer to
-leave your NES rom unmodified, see the section on creating an NmiSafetyFunctor
-below, it can work around many issues like this.
+leave your NES rom unmodified, see the section on creating an NmiSafetyFunctor,
+as it can work around many issues like this.
     - Another possibility is that your game is attempting to detect NTSC,
 Pal or Dendy. GGVm will cause incorrect detection in this type of code. You
 will need to modify your ROM to force the tv type to NTSC, since GGVM operates
