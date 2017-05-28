@@ -411,24 +411,29 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.Cartridge;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.manager.nmi.NmiSafeFunctor;
-import com.gradualgames.manager.rastereffect.RasterEffectManager;
 import com.gradualgames.manager.render.RenderManager;
-import com.gradualgames.manager.render.VerticalMirroringRenderManager;
-import com.gradualgames.manager.soundtrack.SongInfo;
+import com.gradualgames.manager.rastereffect.RasterEffectManager;
+import com.gradualgames.manager.soundtrack.SoundtrackManager;
 import com.gradualgames.manager.soundtrack.GGVmSoundtrackManager;
+import com.gradualgames.manager.soundtrack.SongInfo;
+import com.gradualgames.manager.render.HorizontalMirroringRenderManager;
+import com.gradualgames.manager.render.VerticalMirroringRenderManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by derek on 1/17/2017.
+ * Created by derek on 1/7/2017.
  */
-public class MyTitleGameModule implements GameModule {
+public class MyGameGameModule implements GameModule {
     @Override
     public String provideTitle() {
-        return "MyTitle";
+        return "My Game";
     }
 
     @Override
     public String provideFileName() {
-        return "mytitle/mytitle.nes";
+        return "mygame/mygame.nes";
     }
 
     @Override
@@ -453,7 +458,9 @@ public class MyTitleGameModule implements GameModule {
 
     @Override
     public RenderManager provideRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
-        return new VerticalMirroringRenderManager(ggvm, rasterEffectManager);
+        //Note this must be changed to HorizontalMirroringRenderManager if your game uses
+        //horizontal mirroring.
+        return new VerticalMirroringRenderManager(ggvm, rasterEffectManager, true);
     }
 
     @Override
@@ -492,6 +499,7 @@ public class MyTitleGameModule implements GameModule {
         };
     }
 }
+
 ```
 # Instructions for Creating an NmiSafeFunctor
 
