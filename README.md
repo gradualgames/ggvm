@@ -575,6 +575,10 @@ usage of Sprite 0 Hit from your game's ROM prior to using it with
 ggvm. The Sprite 0 Hit bit in GGVm's PPU never activates; expect your
 game to freeze execution if it is using Sprite 0 Hit normally.
 
+NOTE: To enable this feature, you must pass "true" for the statusBarEnabled
+parameter to the constructor of VerticalMirroringRenderManager or
+HorizontalMirroringRenderManager. See the example GameModule section.
+
 ### Audio Playback Registers
 
 These registers will be installed on the cpuBus if you provide a
