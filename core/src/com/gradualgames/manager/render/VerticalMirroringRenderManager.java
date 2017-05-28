@@ -3,6 +3,7 @@ package com.gradualgames.manager.render;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.GGVm;
+import com.gradualgames.ggvm.GGVmRegisterStatusBar;
 import com.gradualgames.ggvm.Ppu;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 
@@ -14,15 +15,30 @@ import com.gradualgames.manager.rastereffect.RasterEffectManager;
  */
 public class VerticalMirroringRenderManager extends RenderManager {
 
+    private com.gradualgames.ggvm.GGVmRegisterStatusBar GGVmRegisterStatusBar = new GGVmRegisterStatusBar();
+
     public VerticalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
         super(ggvm, rasterEffectManager);
     }
 
+    public VerticalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager, boolean statusBarEnabled) {
+        this(ggvm, rasterEffectManager);
+        if (statusBarEnabled) ggvm.installReadWriteRange(GGVmRegisterStatusBar);
+    }
+
+    @Override
     public void drawNametable(GGVm ggvm, SpriteBatch spriteBatch) {
+        if (GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled()) {
+            drawNametable(ggvm, spriteBatch, Ppu.NAME_TABLE_0_BASE_ADDRESS, 0, 0, 0, ggvm.getSpriteY(0));
+            drawNametable(ggvm, spriteBatch, ggvm.getNametableAddress(), ggvm.getScrollX(), ggvm.getScrollY(), ggvm.getSpriteY(0), 240f);
+        } else {
+            drawNametable(ggvm, spriteBatch, ggvm.getNametableAddress(), ggvm.getScrollX(), ggvm.getScrollY(), 0f, 240f);
+        }
+    }
+
+    private void drawNametable(GGVm ggvm, SpriteBatch spriteBatch, int startingNametableAddress, int scrollX, int scrollY, float splitYStart, float splitYEnd) {
         int patternTableOffset = ggvm.getBackgroundPatternTableAddress() == 0 ? 0 : 1;
 
-        int scrollX = ggvm.getScrollX();
-        int scrollY = ggvm.getScrollY();
         int coarseScrollX = scrollX >> 3;
         int coarseScrollY = scrollY >> 3;
         int fineScrollX = scrollX & 7;
@@ -42,7 +58,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
             screenX = 0;
             nameTableColumnCount = fineScrollX == 0 ? 32 : 33;
             nameTableX = coarseScrollX;
-            nameTable = (ggvm.getNametableAddress() == Ppu.NAME_TABLE_0_BASE_ADDRESS) ? 0 : 1;
+            nameTable = (startingNametableAddress == Ppu.NAME_TABLE_0_BASE_ADDRESS) ? 0 : 1;
             while (nameTableColumnCount > 0) {
                 actualNameTableX = nameTableX % 32;
                 actualNameTableY = nameTableY % 30;
@@ -58,8 +74,10 @@ public class VerticalMirroringRenderManager extends RenderManager {
                 int indexColumn = index & 0x0f;
                 Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                 sprite.setColor(0, attributes[attribute], 0, 0);
-                sprite.setPosition(screenX - fineScrollX, 240 - screenY + fineScrollY);
-                sprite.draw(spriteBatch);
+                if (!GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
+                    sprite.setPosition(screenX - fineScrollX, 240 - screenY + fineScrollY);
+                    sprite.draw(spriteBatch);
+                }
                 screenX += 8;
                 nameTableX++;
                 nameTableColumnCount--;
