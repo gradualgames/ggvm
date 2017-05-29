@@ -58,7 +58,7 @@ special registers. See [Virtual Registers Reference](#virtual-registers-referenc
 
 - No real APU emulation. Games must write to special GGVm only
 hardware registers to play music and sfx back from a list that you
-provide from your game module. See [Example GameModule](#an-example-gamemodule) and [Virtual Registers Reference](#virtual-registers-reference).
+provide from your game module. See [An Example GameModule](#an-example-gamemodule) and [Virtual Registers Reference](#virtual-registers-reference).
 
 - Background sprites may partially hide foreground sprites,
  assuming bg sprites are solid 8x8 squares of pixels.
