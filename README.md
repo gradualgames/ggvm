@@ -604,7 +604,7 @@ of sound effects. Here's an example of how to use this manager.
     }
 ```
 
-As a result of using this manager, six new registers will be available
+As a result of using this manager, new registers will be available
 on the cpu bus for your game ROM to utilize. Here they are:
 
 $5600 - Write a single byte to play a song from the song list.
