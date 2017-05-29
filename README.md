@@ -66,7 +66,7 @@ provide from your game module. See [An Example GameModule](#an-example-gamemodul
 - You can leave out the iNES header and configure from GGVM,
 which discourages someone from extracting your rom.
 
-- Due to using Audio Playback Registers, you can gut your sound engine. Thus
+- Due to using [Audio Playback Registers](#audio-playback-registers), you can gut your sound engine. Thus
  if anyone extracts your ROM, it'll have no audio and they
  wasted their time.
 
@@ -256,7 +256,7 @@ required to run your game.
 
 # Building a Game for PC
 
-To run the currently configured game (see [Setting up local.properties](#setting-up-local.properties)) on PC, type:
+To run the currently configured game (see [Setting up local.properties](#setting-up-localproperties)) on PC, type:
 
 ./gradlew desktop:run
 
@@ -290,7 +290,7 @@ PC release, say for Steam.
 
 # Building a Game for Android
 
-To run the currently configured game (see [Setting up local.properties](#setting-up-local.properties)) on Android, type:
+To run the currently configured game (see [Setting up local.properties](#setting-up-localproperties)) on Android, type:
 
 ```
 ./gradlew android:run
