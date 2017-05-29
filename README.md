@@ -231,7 +231,7 @@ Depending on how robust your game is against nmi landing in
 unsafe spots, you may need an NmiSafeFunctor class to protect
 against this. In many cases, this can be written as an anonymous
 inner class right inside your game's module. See
-[Instructions for Creating an NmiSafeFunctor(#instructions-for-creating-an-nmisafefunctor).
+[Instructions for Creating an NmiSafeFunctor](#instructions-for-creating-an-nmisafefunctor).
 
 dushlan/src/com/gradualgames/manager/rastereffect:
 
@@ -735,7 +735,7 @@ special register. See [Virtual Registers Reference](#virtual-registers-reference
 thing is that your game was tuned to the precise timing of an NES,
 and nmi is stepping on something and causing chaos. It is recommended
 to make your game as robust as possible, but if you would prefer to
-leave your NES rom unmodified, see [Instructions for Creating an NmiSafeFunctor(#instructions-for-creating-an-nmisafefunctor),
+leave your NES rom unmodified, see [Instructions for Creating an NmiSafeFunctor](#instructions-for-creating-an-nmisafefunctor),
 as it can work around many issues like this.
     - Another possibility is that your game is attempting to detect NTSC,
 Pal or Dendy. GGVm will cause incorrect detection in this type of code. You
