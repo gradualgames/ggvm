@@ -18,11 +18,6 @@ import java.util.List;
  * $5603 - Resumes current music.
  * $5604 - Stops all music.
  *
- * There is also one status register available to determine if music is still playing.
- * Since the audio subsystems on some devices on some platforms (Particularly Android's
- * audio subsystem can be unreliable on some devices) it is NOT recommended to use this register.
- * Please avoid it at all costs. You have been warned.
- * $5605 - Reads 1 if music is playing, 0 if not.
  */
 public class GGVmSoundtrackManager extends SoundtrackManager implements Music.OnCompletionListener {
 
@@ -31,7 +26,6 @@ public class GGVmSoundtrackManager extends SoundtrackManager implements Music.On
     private GGVmRegisterPauseMusic ggVmRegisterPauseMusic;
     private GGVmRegisterResumeMusic ggVmRegisterResumeMusic;
     private GGVmRegisterStopMusic ggVmRegisterStopMusic;
-    private GGVmRegisterMusicStatus ggVmRegisterMusicStatus;
 
     private List<SongInfo> songList = new ArrayList<SongInfo>();
     private List<String> sfxList = new ArrayList<String>();
@@ -47,13 +41,11 @@ public class GGVmSoundtrackManager extends SoundtrackManager implements Music.On
         ggVmRegisterPauseMusic = new GGVmRegisterPauseMusic(this);
         ggVmRegisterResumeMusic = new GGVmRegisterResumeMusic(this);
         ggVmRegisterStopMusic = new GGVmRegisterStopMusic(this);
-        ggVmRegisterMusicStatus = new GGVmRegisterMusicStatus(this);
         ggvm.installReadWriteRange(ggVmRegisterPlayMusic);
         ggvm.installReadWriteRange(ggVmRegisterPlaySfx);
         ggvm.installReadWriteRange(ggVmRegisterPauseMusic);
         ggvm.installReadWriteRange(ggVmRegisterResumeMusic);
         ggvm.installReadWriteRange(ggVmRegisterStopMusic);
-        ggvm.installReadWriteRange(ggVmRegisterMusicStatus);
     }
 
     public boolean musicIsPlaying() {
