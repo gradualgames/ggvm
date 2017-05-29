@@ -210,7 +210,7 @@ is used as an example.
 
 dushlan/dushlan.nes:
 Not optional. This is the game's rom. The name can be anything,
-see [An Example GameModule](#-an-example-gamemodule).
+see [An Example GameModule](#an-example-gamemodule).
 
 dushlan/icon:
 
@@ -709,16 +709,10 @@ turning graphics on. In GGVm, I can replicate this behavior just
 by drawing a black rectangle at the top of the screen to hide
 scrolling updates.
 
-For real raster effects, such as split screens, it is likely
-that you will need to extend HorizontalMirroringRenderManager
-or VerticalMirroringRenderManager, and then inspect cpu
-registers and ram similar to how SoundtrackManager works to find
-out where split points are, and then render the nametable in
-a top and a bottom section. It is also likely you will need to
-use fbos to do this. I'm planning to do something like this for
-my current game, so I will be diving into this at some point in
-the future. I'm also open to contributions if anybody wants to
-dive in to this.
+For split screen effects, GGVm provides some special registers for
+performing split screens. Natively implemented scanline effects
+are not supported. See [Virtual Registers Reference](#virtual-registers-reference).
+These effects will likely be expanded in ongoing development of GGVm.
 
 # Gotchas
 
