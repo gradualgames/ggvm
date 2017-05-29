@@ -53,11 +53,12 @@ controller subsystem.
 
 - 6502 cpu core. Only write your game ONCE, for the NES!
 
-- No real PPU emulation. Adapters must be coded for raster
- effects, per-game. (a couple hours' work)
+- No real PPU emulation. Split screen capabilities are provided via
+special registers. See [Virtual Registers Reference](#virtual-registers-reference).
 
-- No real APU emulation. Adapters must be coded per-game, which
- play OGG files when sound engine routines are called. (a couple hours' work)
+- No real APU emulation. Games must write to special GGVm only
+hardware registers to play music and sfx back from a list that you
+provide from your game module. See [Example GameModule](#an-example-gamemodule) and [Virtual Registers Reference](#virtual-registers-reference).
 
 - Background sprites may partially hide foreground sprites,
  assuming bg sprites are solid 8x8 squares of pixels.
@@ -65,7 +66,7 @@ controller subsystem.
 - You can leave out the iNES header and configure from GGVM,
 which discourages someone from extracting your rom.
 
-- Due to coding audio adapter, you can gut your sound engine. Thus
+- Due to using Audio Playback Registers, you can gut your sound engine. Thus
  if anyone extracts your ROM, it'll have no audio and they
  wasted their time.
 
@@ -617,13 +618,6 @@ $5602 - Write a byte of any value to pause current music.
 $5603 - Write a byte of any value to resume current music.
 
 $5604 - Write a byte of any value to stop all music.
-
-There is also one status register available to determine if music is still playing.
-Since the audio subsystems on some devices on some platforms (Particularly Android's
-audio subsystem can be unreliable on some devices) it is NOT recommended to use this register.
-Please avoid it at all costs. You have been warned.
-
-$5605 - Reads 1 if music is playing, 0 if not.
 
 # Instructions for Creating a Custom SoundtrackManager
 
