@@ -738,4 +738,7 @@ at 60 fps. Depending on the game, tvSystem may be used to look up different
 speed values etc.
 
 - Something else?
-    - Please log an issue on GGVm's Github page.
+    - Please log an issue here: https://github.com/gradualgames/ggvm/issues. When providing
+information about your issue, please include log.txt. This file will be saved in the working
+directory where your game was running. During development typically this will be in android/assets
+(this is shared between android and desktop projects).
