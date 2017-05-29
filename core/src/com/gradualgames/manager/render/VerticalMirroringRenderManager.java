@@ -49,7 +49,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
         int actualNameTableX;
         int actualNameTableY;
         int screenX = 0;
-        int screenY = 8;
+        int screenY = 0;
         int nameTableRowCount = fineScrollY == 0 ? 30 : 31;
         int nameTableColumnCount;
         int nameTable;
@@ -75,7 +75,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
                 Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                 sprite.setColor(0, attributes[attribute], 0, 0);
                 if (!GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
-                    sprite.setPosition(screenX - fineScrollX, 240 - screenY + fineScrollY);
+                    sprite.setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);
                     sprite.draw(spriteBatch);
                 }
                 screenX += 8;
