@@ -210,7 +210,7 @@ is used as an example.
 
 dushlan/dushlan.nes:
 Not optional. This is the game's rom. The name can be anything,
-see the section about creating a GameModule.
+see [An Example GameModule](#-an-example-gamemodule).
 
 dushlan/icon:
 
@@ -230,8 +230,8 @@ dushlan/src/com/gradualgames/manager/nmi:
 Depending on how robust your game is against nmi landing in
 unsafe spots, you may need an NmiSafeFunctor class to protect
 against this. In many cases, this can be written as an anonymous
-inner class right inside your game's module. See later sections
-for more information.
+inner class right inside your game's module. See
+[Instructions for Creating an NmiSafeFunctor(#instructions-for-creating-an-nmisafefunctor).
 
 dushlan/src/com/gradualgames/manager/rastereffect:
 
@@ -256,8 +256,7 @@ required to run your game.
 
 # Building a Game for PC
 
-To run the currently configured game (see section about the
-local.properties file) on PC, type:
+To run the currently configured game (see [Setting up local.properties](#setting-up-local.properties)) on PC, type:
 
 ./gradlew desktop:run
 
@@ -291,8 +290,7 @@ PC release, say for Steam.
 
 # Building a Game for Android
 
-To run the currently configured game (see section about the
-local.properties file) on Android, type:
+To run the currently configured game (see [Setting up local.properties](#setting-up-local.properties)) on Android, type:
 
 ```
 ./gradlew android:run
@@ -485,7 +483,7 @@ public class MyGameGameModule implements GameModule {
         sfxList.add("game/sfx/sfx00.mp3");
 
         //This is the recommended SoundtrackManager class to use. You may also
-        //write your own. See the Audio Playback Registers section for how to
+        //write your own. See the [Audio Playback Registers](#audio-playback-registers) section for how to
         //use this manager to play back the songs and sfx in the two lists above.
         return new GGVmSoundtrackManager("game", ggvm, songList, sfxList);
     }
@@ -578,7 +576,7 @@ game to freeze execution if it is using Sprite 0 Hit normally.
 
 NOTE: To enable this feature, you must pass "true" for the statusBarEnabled
 parameter to the constructor of VerticalMirroringRenderManager or
-HorizontalMirroringRenderManager. See the example GameModule section.
+HorizontalMirroringRenderManager. See the [An Example GameModule](#an-example-gamemodule).
 
 ### Audio Playback Registers
 
@@ -600,7 +598,7 @@ of sound effects. Here's an example of how to use this manager.
         sfxList.add("game/sfx/sfx00.mp3");
 
         //This is the recommended SoundtrackManager class to use. You may also
-        //write your own. See the Audio Playback Registers section for how to
+        //write your own. See the [Audio Playback Registers](#audio-playback-registers) section for how to
         //use this manager to play back the songs and sfx in the two lists above.
         return new GGVmSoundtrackManager("game", ggvm, songList, sfxList);
     }
@@ -730,14 +728,14 @@ is what you should do.
 - The game totally freezes.
     - Are you using Sprite 0 Hit? GGVm does not natively support this
 bit. It does however support Sprite 0 Hit based status bars via a
-special register. See Virtual Registers Reference.
+special register. See [Virtual Registers Reference](#virtual-registers-reference).
 
 - Inexplicable odd behavior, glitches, etc.
     - There are a couple of things that can cause this. The most likely
 thing is that your game was tuned to the precise timing of an NES,
 and nmi is stepping on something and causing chaos. It is recommended
 to make your game as robust as possible, but if you would prefer to
-leave your NES rom unmodified, see the section on creating an NmiSafetyFunctor,
+leave your NES rom unmodified, see [Instructions for Creating an NmiSafeFunctor(#instructions-for-creating-an-nmisafefunctor),
 as it can work around many issues like this.
     - Another possibility is that your game is attempting to detect NTSC,
 Pal or Dendy. GGVm will cause incorrect detection in this type of code. You
