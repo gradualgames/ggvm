@@ -30,12 +30,11 @@ work on the part of the developer.
 - Package - Your game can be distributed as a Jar, a Jar+JRE, an
 APK, or an IPA.
 
-- Protect - You can omit the iNES header, and remove your sound
-engine implementation from your game ROM (your soundtrack will
-be played as ogg, mp3 or wav files) Any casual hackers who
-successfully fill in your iNES header and run your game in an
-emulator will have wasted their time: no sound. If you are
-using any raster effects, these, too, can be omitted from the
+- Protect - You can obfuscate the iNES header, and remove your sound engine implementation from
+your game ROM (your soundtrack will be played as ogg, mp3 or wav files)
+Any casual hackers who successfully fill in your iNES header and run
+your game in an emulator will have wasted their time: no sound. If
+you are using any raster effects, these, too, can be omitted from the
 rom and adapted by customizing GGVm instead.
 
 # Features and Limitations
@@ -63,7 +62,7 @@ provide from your game module. See [An Example GameModule](#an-example-gamemodul
 - Background sprites may partially hide foreground sprites,
  assuming bg sprites are solid 8x8 squares of pixels.
 
-- You can leave out the iNES header and configure from GGVM,
+- You can obfuscate the iNES header and configure from GGVM,
 which discourages someone from extracting your rom.
 
 - Due to using [Audio Playback Registers](#audio-playback-registers), you can gut your sound engine. Thus
@@ -370,8 +369,8 @@ explanatory. Some things to note however:
 
 -provideCartridge can provide a Cartridge either specifying the
 rom configuration totally manually, or just allow it to
-interpret the iNES file for you. It is recommended to strip the
-iNES header from your ROM and configure from this method
+interpret the iNES file for you. It is recommended to obfuscate the
+iNES header in your ROM and configure from this method
 instead, to help discourage casual hackers from pulling your rom
 out of the distributed game and using it in an emulator. Here is
 an example:
@@ -385,7 +384,7 @@ an example:
 
 This configures the cartridge for 32 prg roms, 0 chr roms,
 mapper 2, and vertical mirroring. Thus, the iNES header will be
-ignored and can be removed from the ROM.
+ignored and can be zeroed out or filled with garbage in your ROM.
 
 # An Example GameModule
 
