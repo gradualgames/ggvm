@@ -285,8 +285,6 @@ public class PCMenu extends Menu {
                         menuAction();
                         return true;
                     case Input.Keys.ESCAPE:
-                    case Input.Keys.Q:
-                    case Input.Keys.M:
                         dismissMenu();
                         return true;
                     default:
@@ -385,7 +383,7 @@ public class PCMenu extends Menu {
         @Override
         public boolean keyDown(int keycode) {
             Gdx.app.log(getClass().getSimpleName(), "keyDown(" + keycode + ")");
-            if (keycode != Input.Keys.ESCAPE && keycode != Input.Keys.Q && keycode != Input.Keys.M) {
+            if (keycode != Input.Keys.ESCAPE) {
                 inputProcessor.getButtonIndexToKeyCode().inverse().forcePut(keycode, currentMenuOption.buttonIndex);
                 menu = topLevelMenu;
                 menu.activate();

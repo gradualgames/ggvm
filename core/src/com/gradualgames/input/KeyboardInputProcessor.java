@@ -261,7 +261,7 @@ public class KeyboardInputProcessor extends InputProcessorBase {
                 ggvm.setButtonState(buttonToButtonUpIndex.get(buttonIndex), false);
             }
         }
-        if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.Q || keycode == Input.Keys.M) {
+        if (keycode == Input.Keys.ESCAPE) {
             stopGGVmAndActivateMenu();
         }
         return false;
