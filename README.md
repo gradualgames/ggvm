@@ -741,6 +741,9 @@ speed values etc.
     well on most systems (unsupported on iOS, however). You need to make sure there are no
     silent samples at the beginning or end of your looping portion and no silent samples at
     the end of your intro portion. Audacity works well for this type of audio editing.
+    - WAV may help improve the situation because of how simple the underlying codecs are
+    with respect to loading and streaming the data. It'll result in a larger distributable,
+    but may be worth a try if these gaps become a problem for you.
     - If gaps still occur, this could be due to differences in audio hardware and software
     on different PCs. The best workaround for this is to create a version of your song which
     contains the intro and several iterations of the looping portion, followed by just the
