@@ -736,6 +736,17 @@ will need to modify your ROM to force the tv type to NTSC, since GGVM operates
 at 60 fps. Depending on the game, tvSystem may be used to look up different
 speed values etc.
 
+- A small gap between intro and looping portions of a song, or a gap while looping.
+    - There are several things you can try to improve this situation. OGG typically works
+    well on most systems. You need to make sure there are no silent samples at the beginning
+    or end of your looping portion and no silent samples at the end of your intro portion.
+    Audacity works well for this type of audio editing.
+    - If gaps still occur, this could be due to differences in audio hardware and software
+    on different PCs. The best workaround for this is to create a version of your song which
+    contains the intro and several iterations of the looping portion, followed by just the
+    looping portion. If you make this long enough with your game's style of gameplay in mind,
+    the player may never notice the gap occuring unless they are really paying attention.
+
 - Something else?
     - Please log an issue here: https://github.com/gradualgames/ggvm/issues. When providing
 information about your issue, please include log.txt. This file will be saved in the working
