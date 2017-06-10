@@ -409,13 +409,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gradualgames.ggvm.Cartridge;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.manager.nmi.NmiSafeFunctor;
-import com.gradualgames.manager.render.RenderManager;
+import com.gradualgames.manager.render.*;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 import com.gradualgames.manager.soundtrack.SoundtrackManager;
 import com.gradualgames.manager.soundtrack.GGVmSoundtrackManager;
 import com.gradualgames.manager.soundtrack.SongInfo;
-import com.gradualgames.manager.render.HorizontalMirroringRenderManager;
-import com.gradualgames.manager.render.VerticalMirroringRenderManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -455,10 +453,20 @@ public class MyGameGameModule implements GameModule {
     }
 
     @Override
-    public RenderManager provideRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
-        //Note this must be changed to HorizontalMirroringRenderManager if your game uses
-        //horizontal mirroring.
-        return new VerticalMirroringRenderManager(ggvm, rasterEffectManager, true);
+    public PatternTableManager providePatternTableManager(GGVm ggvm) {
+        return new PatternTableManager(ggvm);
+        //Uncomment the following line and remove the line above if you wish
+        //to use Mapper 30, CHR-RAM bankswitching (4 banks)
+        //return new ChrRamPatternTableManager(ggvm);
+    }
+
+    @Override
+    public RenderManager provideRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager) {
+        //Uncomment the line corresponding to the type of mirroring you use.
+        //Note: The last parameter indicates whether you wish to use GGVm's status bar register.
+        return new HorizontalMirroringRenderManager(ggvm, patternTableManager, rasterEffectManager, true);
+        //return new VerticalMirroringRenderManager(ggvm, patternTableManager, rasterEffectManager, true);
+        //return new SingleScreenMirroringRenderManager(ggvm, patternTableManager, rasterEffectManager, true);
     }
 
     @Override
