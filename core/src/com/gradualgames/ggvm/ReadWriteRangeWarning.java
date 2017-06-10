@@ -77,9 +77,9 @@ public class ReadWriteRangeWarning implements ReadWriteRange {
      * @return The bank that is swapped in, or -1 if no switchboard available
      */
     public int getLowerPrgBank() {
-        if (bus.busType == Bus.BusType.CPU && bus.memoryMap[0x8000] instanceof RomSwitchboard) {
-            RomSwitchboard romSwitchboard = (RomSwitchboard) bus.memoryMap[0x8000];
-            return romSwitchboard.getCurrentRom();
+        if (bus.busType == Bus.BusType.CPU && bus.memoryMap[0x8000] instanceof UnromSwitchboard) {
+            UnromSwitchboard unromSwitchboard = (UnromSwitchboard) bus.memoryMap[0x8000];
+            return unromSwitchboard.getCurrentRom();
         }
         return -1;
     }

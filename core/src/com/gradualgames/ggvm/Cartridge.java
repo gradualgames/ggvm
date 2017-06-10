@@ -19,6 +19,8 @@ public class Cartridge {
 
     private int mapper;
     private int mirroringMode;
+
+    private boolean ignoreMirroringMode = false;
     private int prgRomCount;
     private int chrRomCount;
 
@@ -57,8 +59,9 @@ public class Cartridge {
         //Get ROM counts out of iNES header
         prgRomCount = bytes[4];
         chrRomCount = bytes[5];
-        mapper = (bytes[6] >> 4) | (bytes[7] & 0xf0);
+        mapper = ((bytes[6] & 0xff) >> 4) | ((bytes[7] & 0xff) & 0xf0);
         mirroringMode = bytes[6] & 1;
+        ignoreMirroringMode = (bytes[6] & 8) != 0;
 
         processData(bytes, INES_HEADER_SIZE);
     }
@@ -106,6 +109,14 @@ public class Cartridge {
     }
 
     /**
+     * @return Whether to ignore the mirroring mode. This will be true when
+     * single screen mirroring is active.
+     */
+    public boolean isIgnoreMirroringMode() {
+        return ignoreMirroringMode;
+    }
+
+    /**
      * @return The number of PRG-ROMs in this cartridge.
      */
     public int getPrgRomCount() {
@@ -144,6 +155,8 @@ public class Cartridge {
             return Mapper0.configure(this);
         } else if (mapper == 2) {
             return Mapper2.configure(this);
+        } else if (mapper == 30) {
+            return Mapper30.configure(this);
         }
         return null;
     }

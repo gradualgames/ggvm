@@ -9,15 +9,15 @@ package com.gradualgames.ggvm;
  */
 public class FixedRom extends Rom {
 
-    private RomSwitchboard romSwitchboard;
+    private UnromSwitchboard unromSwitchboard;
 
-    public FixedRom(RomSwitchboard romSwitchboard, int lower, byte[] data) {
+    public FixedRom(UnromSwitchboard unromSwitchboard, int lower, byte[] data) {
         super(lower, data);
-        this.romSwitchboard = romSwitchboard;
+        this.unromSwitchboard = unromSwitchboard;
     }
 
     @Override
     public void write(int address, byte value) {
-        romSwitchboard.write(address, value);
+        unromSwitchboard.write(address, value);
     }
 }

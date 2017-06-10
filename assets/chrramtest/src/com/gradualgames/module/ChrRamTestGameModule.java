@@ -5,6 +5,7 @@ import com.gradualgames.ggvm.Cartridge;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.manager.nmi.NmiSafeFunctor;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
+import com.gradualgames.manager.render.PatternTableManager;
 import com.gradualgames.manager.render.RenderManager;
 import com.gradualgames.manager.render.VerticalMirroringRenderManager;
 import com.gradualgames.manager.soundtrack.SoundtrackManager;
@@ -43,9 +44,13 @@ public class ChrRamTestGameModule implements GameModule {
         return new Cartridge(bytes);
     }
 
+    public PatternTableManager providePatternTableManager(GGVm ggvm) {
+        return new PatternTableManager(ggvm);
+    }
+
     @Override
-    public RenderManager provideRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
-        return new VerticalMirroringRenderManager(ggvm, rasterEffectManager);
+    public RenderManager provideRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager) {
+        return new VerticalMirroringRenderManager(ggvm, patternTableManager, rasterEffectManager, false);
     }
 
     @Override

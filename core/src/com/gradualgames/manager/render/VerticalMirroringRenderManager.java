@@ -17,12 +17,12 @@ public class VerticalMirroringRenderManager extends RenderManager {
 
     private com.gradualgames.ggvm.GGVmRegisterStatusBar GGVmRegisterStatusBar = new GGVmRegisterStatusBar();
 
-    public VerticalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
-        super(ggvm, rasterEffectManager);
+    public VerticalMirroringRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager) {
+        super(ggvm, patternTableManager, rasterEffectManager);
     }
 
-    public VerticalMirroringRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager, boolean statusBarEnabled) {
-        this(ggvm, rasterEffectManager);
+    public VerticalMirroringRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager, boolean statusBarEnabled) {
+        this(ggvm, patternTableManager, rasterEffectManager);
         if (statusBarEnabled) ggvm.installReadWriteRange(GGVmRegisterStatusBar);
     }
 
@@ -37,7 +37,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
     }
 
     private void drawNametable(GGVm ggvm, SpriteBatch spriteBatch, int startingNametableAddress, int scrollX, int scrollY, float splitYStart, float splitYEnd) {
-        int patternTableOffset = ggvm.getBackgroundPatternTableAddress() == 0 ? 0 : 1;
+        int patternTable = ggvm.getBackgroundPatternTableAddress() == 0 ? 0 : 1;
 
         int coarseScrollX = scrollX >> 3;
         int coarseScrollY = scrollY >> 3;
@@ -72,7 +72,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
 
                 int indexRow = index >> 4;
                 int indexColumn = index & 0x0f;
-                Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                Sprite sprite = patternTableManager.getSprite(patternTable, indexRow, indexColumn);//patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                 sprite.setColor(0, attributes[attribute], 0, 0);
                 if (!GGVmRegisterStatusBar.isSprite0HitStatusBarEnabled() || (screenY >= splitYStart && screenY < splitYEnd)) {
                     sprite.setPosition(screenX - fineScrollX, 232 - screenY + fineScrollY);

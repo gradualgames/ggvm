@@ -9,6 +9,7 @@ import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.ggvm.OnGeneratePatternTableListener;
 import com.gradualgames.input.InputProcessorBase;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
+import com.gradualgames.manager.render.PatternTableManager;
 import com.gradualgames.manager.render.RenderManager;
 import com.gradualgames.manager.soundtrack.SoundtrackManager;
 import com.gradualgames.menu.Menu;
@@ -44,6 +45,7 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
     //Game specific module and managers
     private GameModule gameModule;
     private RenderManager renderManager;
+    private PatternTableManager patternTableManager;
     private RasterEffectManager rasterEffectManager;
     private SoundtrackManager soundtrackManager;
 
@@ -102,8 +104,10 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         menu.create();
         inputProcessor.setMenu(menu);
 
+        //Get pattern table manager
+        patternTableManager = gameModule.providePatternTableManager(ggvm);
         //Get render strategy and create all LibGDX objects
-        renderManager = gameModule.provideRenderManager(ggvm, rasterEffectManager);
+        renderManager = gameModule.provideRenderManager(ggvm, patternTableManager, rasterEffectManager);
 
         //Setup application level LibGDX objects
         spriteBatch = new SpriteBatch();
@@ -111,7 +115,7 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         loadState();
 
         //Generate graphics at least once in case we have a CHR-ROM mapper.
-        renderManager.onGeneratePatternTable();
+        patternTableManager.onGeneratePatternTable();
 
         ggvm.start();
     }
@@ -262,7 +266,7 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
      */
     @Override
     public void onGeneratePatternTable() {
-        renderManager.onGeneratePatternTable();
+        patternTableManager.onGeneratePatternTable();
     }
 
     /**
@@ -272,6 +276,6 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
      */
     @Override
     public void onGeneratePattern(int patternAddress) {
-        renderManager.onGeneratePattern(patternAddress);
+        patternTableManager.onGeneratePattern(patternAddress);
     }
 }

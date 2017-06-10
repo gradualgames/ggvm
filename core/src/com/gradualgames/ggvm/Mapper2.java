@@ -12,7 +12,7 @@ import java.util.List;
  * number of swappable Roms and one fixed rom, mapped to 0x8000 and
  * 0xc000 base addresses just like the real Mapper 2. Any write performed
  * to it is interpreted as a bankswitch command and it change out which of
- * the swappable roms is currently pointed to by the RomSwitchboard object.
+ * the swappable roms is currently pointed to by the UnromSwitchboard object.
  *
  * Note that this mapper may not exhaustively support all Mapper 2 functionality.
  */
@@ -24,14 +24,14 @@ public class Mapper2 implements ReadWriteRangeProvider {
     private static final int SWAPPABLE_ROM_BASE_ADDRESS = 0x8000;
     private static final int FIXED_ROM_BASE_ADDRESS = 0xc000;
 
-    private RomSwitchboard swappableRoms;
+    private UnromSwitchboard unromSwitchboard;
     private Rom fixedRom;
     private Ram chrRam;
     private List<Ram> nameTableRams = new ArrayList<Ram>();
     private Ram paletteRam;
 
-    private Mapper2(RomSwitchboard swappableRoms, Rom fixedRom, Ram chrRam, List<Ram> nameTableRams, Ram paletteRam) {
-        this.swappableRoms = swappableRoms;
+    private Mapper2(UnromSwitchboard unromSwitchboard, Rom fixedRom, Ram chrRam, List<Ram> nameTableRams, Ram paletteRam) {
+        this.unromSwitchboard = unromSwitchboard;
         this.fixedRom = fixedRom;
         this.chrRam = chrRam;
         this.nameTableRams.addAll(nameTableRams);
@@ -55,8 +55,8 @@ public class Mapper2 implements ReadWriteRangeProvider {
         for(int i = 0; i < prgRomCount - 1; i++) {
             swappableRoms[i] = new Rom(Mapper2.SWAPPABLE_ROM_BASE_ADDRESS, prgRoms[i].getData());
         }
-        RomSwitchboard romSwitchboard = new RomSwitchboard(Mapper2.SWAPPABLE_ROM_BASE_ADDRESS, Mapper2.MAPPER_2_ROM_SIZE, swappableRoms);
-        FixedRom fixedRom = new FixedRom(romSwitchboard, Mapper2.FIXED_ROM_BASE_ADDRESS, prgRoms[prgRomCount - 1].getData());
+        UnromSwitchboard unromSwitchboard = new UnromSwitchboard(Mapper2.SWAPPABLE_ROM_BASE_ADDRESS, Mapper2.MAPPER_2_ROM_SIZE, swappableRoms);
+        FixedRom fixedRom = new FixedRom(unromSwitchboard, Mapper2.FIXED_ROM_BASE_ADDRESS, prgRoms[prgRomCount - 1].getData());
 
         //Configure CHR ram
         Ram chrRam = new Ram(Mapper2.MAPPER_2_CHR_RAM_BASE_ADDRESS, Mapper2.MAPPER_2_CHR_RAM_SIZE);
@@ -76,7 +76,7 @@ public class Mapper2 implements ReadWriteRangeProvider {
         }
         Ram paletteRam = new Ram(Ppu.BG_PALETTE_BASE_ADDRESS, Ppu.PALETTE_RAM_SIZE);
 
-        return new Mapper2(romSwitchboard, fixedRom, chrRam, nameTableRams, paletteRam);
+        return new Mapper2(unromSwitchboard, fixedRom, chrRam, nameTableRams, paletteRam);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class Mapper2 implements ReadWriteRangeProvider {
         ArrayList<ReadWriteRange> readWriteRanges = new ArrayList<ReadWriteRange>();
         switch (busType) {
             case CPU:
-                readWriteRanges.add(swappableRoms);
+                readWriteRanges.add(unromSwitchboard);
                 readWriteRanges.add(fixedRom);
                 break;
             case PPU:

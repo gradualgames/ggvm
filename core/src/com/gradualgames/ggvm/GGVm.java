@@ -193,6 +193,17 @@ public class GGVm implements BusListener {
     }
 
     /**
+     * Retrieves a ReadWriteRange object from the cpu bus. This may be interesting to the
+     * pattern table manager, for example, for retrieving data written to the cpu bus for which
+     * chr bank to swap into place.
+     * @param address Address of the read write range object to retrieve.
+     * @return The ReadWriteRange object mapped at that address.
+     */
+    public ReadWriteRange getReadWriteRange(int address) {
+        return cpuBus.memoryMap[address];
+    }
+
+    /**
      * Return current value of cpu accumulator.
      * @return Register value
      */
@@ -240,9 +251,9 @@ public class GGVm implements BusListener {
      * @return
      */
     public int getLowerPrgBank() {
-        if (cpuBus.memoryMap[0x8000] instanceof RomSwitchboard) {
-            RomSwitchboard romSwitchboard = (RomSwitchboard) cpuBus.memoryMap[0x8000];
-            return romSwitchboard.getCurrentRom();
+        if (cpuBus.memoryMap[0x8000] instanceof UnromSwitchboard) {
+            UnromSwitchboard unromSwitchboard = (UnromSwitchboard) cpuBus.memoryMap[0x8000];
+            return unromSwitchboard.getCurrentRom();
         }
         return -1;
     }

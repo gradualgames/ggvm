@@ -50,26 +50,16 @@ import com.gradualgames.manager.rastereffect.RasterEffectManager;
  * attribute information is available immediately per pixel to the fragment shader, obtaining
  * good performance and as few flushes as possible.
  *
- * TODO: Implement CHR-ROM bankswitching. We would have to generate more backing textures in
- * various configurations depending on the mapper, but this should not be very difficult to
- * implement as PRG-ROM bankswitching already works well (see Mapper 2 and RomSwitchboard).
- *
- * TODO: Improve performance of live CHR-RAM updates on mobile. Works pretty well on PC, but
- * framerate drops to ~55 or so on Android devices when large CHR-RAM streams are being loaded
- * via nmi.
  */
-public abstract class RenderManager implements OnGeneratePatternTableListener {
+public abstract class RenderManager {
 
     protected GGVm ggvm;
     protected RasterEffectManager rasterEffectManager;
+    protected PatternTableManager patternTableManager;
 
     //LibGDX objects
     protected FitViewport viewPort;
     protected Camera camera;
-    protected Pixmap patternPixmap;
-    protected Pixmap patternTablePixmap;
-    protected Texture patternTableTexture;
-    protected Sprite[][] patternTableSprites = new Sprite[32][16];
     protected int backgroundSpritesCount = 0;
     protected int foregroundSpritesCount = 0;
     protected int[] backgroundSprites = new int[64];
@@ -98,10 +88,10 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
 
     //Palette information
     protected int[] masterPalette = new int[64];
-    protected int[] monochromePalette = new int[4];
 
-    public RenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager) {
+    public RenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager) {
         this.ggvm = ggvm;
+        this.patternTableManager = patternTableManager;
         this.rasterEffectManager = rasterEffectManager;
         initialize();
     }
@@ -130,25 +120,6 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
         pixmap.dispose();
 
-        //Allocate a pixmap big enough to accommodate both pattern tables.
-        patternTablePixmap = new Pixmap(128, 256, Pixmap.Format.RGBA8888);
-        //Set blending to none so we can rewrite the pixmap and draw it to the
-        //pattern table texture when graphics are regenerated.
-        patternTablePixmap.setBlending(Pixmap.Blending.None);
-
-        //Allocate a pixmap the size of one tile for live CHR-RAM updates.
-        patternPixmap = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
-        patternPixmap.setBlending(Pixmap.Blending.None);
-
-        patternTableTexture = new Texture(patternTablePixmap, false);
-        TextureRegion[][] textureRegions = TextureRegion.split(patternTableTexture, 8, 8);
-        for(int row = 0; row < 32; row++) {
-            for(int column = 0; column < 16; column++) {
-                TextureRegion textureRegion = textureRegions[row][column];
-                patternTableSprites[row][column] = new Sprite(textureRegion);
-            }
-        }
-
         //Initialize transparent mask sprite
         transparentMaskPixmap = new Pixmap(8, 8, Pixmap.Format.RGBA8888);
         transparentMaskPixmap.setColor(Color.CLEAR);
@@ -175,7 +146,6 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         palettePixmap = new Pixmap(32, 1, Pixmap.Format.RGBA8888);
         paletteTexture = new Texture(palettePixmap);
         masterPalette = loadPalette("palette/nespalette.bmp", 1, 1, 32, 32, 16, 4);
-        initializeMonochromePalette();
     }
 
     public void resize(int width, int height) {
@@ -319,7 +289,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
      * Draw a list of sprites using their indices.
      */
     private void drawSprites(SpriteBatch spriteBatch, int[] spriteIndices, boolean[] isTransparentMask, int spriteCount) {
-        int patternTableOffset = ggvm.getSpritePatternTableAddress() == 0 ?
+        int patternTable = ggvm.getSpritePatternTableAddress() == 0 ?
                 0 : 1;
 
         if(ggvm.getSpriteSize() == 0) {
@@ -336,7 +306,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                         spriteBatch.enableBlending();
                         int indexRow = tile >> 4;
                         int indexColumn = tile & 0x0f;
-                        Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                        Sprite sprite = patternTableManager.getSprite(patternTable, indexRow, indexColumn);//patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                         sprite.setColor(0, attributes[attribute], .5f, 0);
                         sprite.setPosition(x, 231 - y);
                         sprite.setFlip(horizontalFlip, verticalFlip);
@@ -360,7 +330,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                 if (y != 0xff) {
                     int indexRow = index >> 4;
                     int indexColumn = index & 0x0f;
-                    Sprite sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                    Sprite sprite = patternTableManager.getSprite(patternTable, indexRow, indexColumn);//patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                     sprite.setColor(0, attributes[attribute], .5f, 0);
                     sprite.setPosition(x, 239 - y - 16);
                     sprite.setFlip(horizontalFlip, verticalFlip);
@@ -369,7 +339,7 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
                     int secondIndex = (index - 1) & 0xff;
                     indexRow = secondIndex >> 4;
                     indexColumn = secondIndex & 0x0f;
-                    sprite = patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
+                    sprite = patternTableManager.getSprite(patternTable, indexRow, indexColumn); //patternTableSprites[patternTableOffset * 16 + indexRow][indexColumn];
                     sprite.setColor(0, attributes[attribute], .5f, 0);
                     sprite.setPosition(x, 231 - y);
                     sprite.setFlip(horizontalFlip, verticalFlip);
@@ -428,100 +398,5 @@ public abstract class RenderManager implements OnGeneratePatternTableListener {
         for(int attribute = 0; attribute < 4; attribute++) {
             attributes[attribute] = (((float) attribute) * .25f) / 2f;
         }
-    }
-
-    /**
-     * Initializes monochrome palette used when generating textures from chr data.
-     * GGVm palettes consist of 4 sets of 4 colors. Each set of 4 is considered an
-     * attribute. The g component of every pixel is set up to pick an attribute by
-     * setting it to the values 0, .25, .5 and .75, to be used as part of a u,v coordinate
-     * by the shader to pick the correct color. The r component consists of further
-     * subdivisions of 4 in increments of .25/4, added to the g component to pick the
-     * correct color from the background or sprite palette. The b component picks the offset
-     * within the palette lookup table, either 0 or .5 to pick bg or sprites.
-     */
-    private void initializeMonochromePalette() {
-        Gdx.app.log(getClass().getSimpleName(), "initializeMonochromePalette()");
-        for (int pixelValue = 0; pixelValue <= 3; pixelValue++) {
-            monochromePalette[pixelValue] = pixelToShaderPixel(pixelValue, pixelValue == 0 ? true : false);
-        }
-    }
-
-    /**
-     * Converts a monochrome pixel value (expected to be 0 to 3), attribute value,
-     * (also expected to be 0 to 3) into a color to be consumed by the fragment shader.
-     * The r and g components are used to look up the actual color to replace the pixel
-     * with within a palette texture looked up by u/v coordinates in the fragment shader.
-     * The g component will be the attribute and will point to the base of one of 4,
-     * 4 color palettes with the values 0, .25, .5 and .75. The actual color will be pointed
-     * to by the r component as an offset from the g component, which is .25/8 + the
-     * attribute value.
-     *
-     * @param pixelValue
-     * @param transparentColor
-     * @return
-     */
-    private int pixelToShaderPixel(int pixelValue, boolean transparentColor) {
-        float r = (((float) pixelValue) * (.25f / 4f)) + (.25f / 8f);
-        return Color.rgba8888(r / 2, 0, 0, transparentColor ? 0f : 1f);
-    }
-
-    /**
-     * Callback from ggvm which tells the application to generate tile graphics based
-     * on data in ggvm.
-     */
-    @Override
-    public void onGeneratePatternTable() {
-        Gdx.app.log(getClass().getSimpleName(), "onGeneratePatternTable()");
-        generateSpritesForPatternTable();
-    }
-
-    /**
-     * Callback from ggvm which tells the application to generate a single pattern
-     * table tile.
-     */
-    @Override
-    public void onGeneratePattern(int patternAddress) {
-        int patternIndex = patternAddress >> 4;
-        int patternTableSelector = patternIndex >> 8;
-        patternIndex &= 0xff;
-        int indexRow = patternIndex >> 4;
-        int indexColumn = patternIndex & 0x0f;
-        int patternTableXOffsetInPixels = indexColumn * 8;
-        int patternTableYOffsetInPixels = patternTableSelector * 128 + indexRow * 8;
-
-        //Iterate over current tile in pixel units
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                int pixel = ggvm.getChrPixel(patternTableSelector * 256 + indexRow * 16 + indexColumn, x, y);
-                //Pattern table X offset in pixels is the attribute times the width of the pattern table, plus
-                //the current column within the pattern table * 8
-                patternPixmap.drawPixel(7 - x, y, monochromePalette[pixel]);
-            }
-        }
-        patternTableTexture.draw(patternPixmap, patternTableXOffsetInPixels, patternTableYOffsetInPixels);
-     }
-
-    /**
-     * Generates textures and sprites based on pattern table data in ggvm.
-     */
-    private void generateSpritesForPatternTable() {
-        //Iterate over current pattern table in tile units
-        for(int patternTableSelector = 0; patternTableSelector < 2; patternTableSelector++) {
-            for(int row = 0; row < 16; row++) {
-                for(int column = 0; column < 16; column++) {
-                    int patternTableXOffsetInPixels = column * 8;
-                    int patternTableYOffsetInPixels = patternTableSelector * 128 + row * 8;
-                    //Iterate over current tile in pixel units
-                    for (int y = 0; y < 8; y++) {
-                        for (int x = 0; x < 8; x++) {
-                            int pixel = ggvm.getChrPixel(patternTableSelector * 256 + row * 16 + column, x, y);
-                            patternTablePixmap.drawPixel(7 - x + patternTableXOffsetInPixels, y + patternTableYOffsetInPixels, monochromePalette[pixel]);
-                        }
-                    }
-                }
-            }
-        }
-        patternTableTexture.draw(patternTablePixmap, 0, 0);
     }
 }

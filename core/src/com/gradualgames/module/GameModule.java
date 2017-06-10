@@ -3,6 +3,7 @@ package com.gradualgames.module;
 import com.gradualgames.ggvm.Cartridge;
 import com.gradualgames.ggvm.GGVm;
 import com.gradualgames.manager.nmi.NmiSafeFunctor;
+import com.gradualgames.manager.render.PatternTableManager;
 import com.gradualgames.manager.render.RenderManager;
 import com.gradualgames.manager.rastereffect.RasterEffectManager;
 import com.gradualgames.manager.soundtrack.SoundtrackManager;
@@ -33,7 +34,9 @@ public interface GameModule {
 
     Cartridge provideCartridge(byte[] bytes);
 
-    RenderManager provideRenderManager(GGVm ggvm, RasterEffectManager rasterEffectManager);
+    RenderManager provideRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager);
+
+    PatternTableManager providePatternTableManager(GGVm ggvm);
 
     RasterEffectManager provideRasterEffectManager(GGVm ggvm);
 
