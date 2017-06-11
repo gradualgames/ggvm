@@ -1,5 +1,6 @@
 package com.gradualgames.application;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
@@ -161,8 +162,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
     @Override
     public void pause() {
         super.pause();
-        ggvm.stop();
-        saveState();
+        switch (Gdx.app.getType()) {
+            case Android:
+            case iOS:
+                ggvm.stop();
+                saveState();
+                break;
+        }
     }
 
     /**
@@ -172,8 +178,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
     @Override
     public void resume() {
         super.resume();
-        loadState();
-        ggvm.start();
+        switch (Gdx.app.getType()) {
+            case Android:
+            case iOS:
+                loadState();
+                ggvm.start();
+                break;
+        }
     }
 
     /**
