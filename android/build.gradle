@@ -31,12 +31,14 @@ task deleteFiles {
     tree.exclude '**/font*'
     tree.exclude '**/palette*'
     tree.exclude '**/shaders*'
+    tree.exclude '**/gamepad*'
     delete tree
     tree.visit { FileVisitDetails details ->
         if (details.file.isDirectory() &&
                 details.file.name != "font" &&
                 details.file.name != "palette" &&
-                details.file.name != "shaders") {
+                details.file.name != "shaders" &&
+                details.file.name != "gamepad") {
             delete details.file.path
         }
     }

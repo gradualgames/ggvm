@@ -32,6 +32,12 @@ public interface GameModule {
 
     String provideIconFileName();
 
+    String provideDpadFileName();
+
+    String provideSSFileName();
+
+    String provideABFileName();
+
     Cartridge provideCartridge(byte[] bytes);
 
     RenderManager provideRenderManager(GGVm ggvm, PatternTableManager patternTableManager, RasterEffectManager rasterEffectManager);

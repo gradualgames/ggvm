@@ -28,6 +28,18 @@ public abstract class InputProcessorBase implements InputProcessor, ControllerLi
 
     }
 
+    public void setDPadFileName(String dPadFileName) {
+
+    }
+
+    public void setSSFileName(String ssFileName) {
+
+    }
+
+    public void setABFileName(String abFileName) {
+
+    }
+
     public void setMenu(Menu menu) {
 
     }
@@ -37,6 +49,10 @@ public abstract class InputProcessorBase implements InputProcessor, ControllerLi
     }
 
     public void saveConfiguration() {
+
+    }
+
+    public void create() {
 
     }
 
@@ -133,10 +149,13 @@ public abstract class InputProcessorBase implements InputProcessor, ControllerLi
         return false;
     }
 
-    public static <T extends InputProcessorBase> T newInstance(Class<T> inputProcessorClass, GGVm ggvm) {
+    public static <T extends InputProcessorBase> T newInstance(Class<T> inputProcessorClass, GGVm ggvm, String dpadFileName, String ssFileName, String abFileName) {
         try {
             T inputProcessor = inputProcessorClass.newInstance();
             inputProcessor.setGGVm(ggvm);
+            inputProcessor.setDPadFileName(dpadFileName);
+            inputProcessor.setSSFileName(ssFileName);
+            inputProcessor.setABFileName(abFileName);
             return inputProcessor;
         } catch (InstantiationException e) {
             Gdx.app.error(InputProcessorBase.class.getSimpleName(), e.getMessage());

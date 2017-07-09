@@ -94,7 +94,13 @@ public class GGVmApplication extends ApplicationAdapter implements OnGeneratePat
         soundtrackManager = gameModule.provideSoundtrackManager(ggvm);
 
         //Initialize input processor
-        inputProcessor = InputProcessorBase.newInstance(inputProcessorClass, ggvm);
+        inputProcessor = InputProcessorBase.newInstance(
+                inputProcessorClass,
+                ggvm,
+                gameModule.provideDpadFileName(),
+                gameModule.provideSSFileName(),
+                gameModule.provideABFileName());
+        inputProcessor.create();
         inputProcessor.loadConfiguration();
         Gdx.input.setInputProcessor(inputProcessor);
         Controllers.addListener(inputProcessor);

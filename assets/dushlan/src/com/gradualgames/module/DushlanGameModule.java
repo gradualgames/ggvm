@@ -41,6 +41,15 @@ public class DushlanGameModule implements GameModule {
     }
 
     @Override
+    public String provideDpadFileName() { return "gamepad/dpad.png"; }
+
+    @Override
+    public String provideSSFileName() { return "gamepad/ss.png"; }
+
+    @Override
+    public String provideABFileName() { return "gamepad/ab.png"; }
+
+    @Override
     public Cartridge provideCartridge(byte[] bytes) {
         return new Cartridge(bytes);
     }
