@@ -31,10 +31,14 @@ public class TouchInputProcessor extends InputProcessorBase {
     private static final int SELECT_Y = 20;
     private static final int START_X = -90;
     private static final int START_Y = 20;
+    private static final int SIZE_TOGGLE_X = 40;
+    private static final int SIZE_TOGGLE_Y = -20;
     private static final int A_X = -44;
     private static final int A_Y = 130;
     private static final int B_X = -44;
     private static final int B_Y = 80;
+
+    private static final int ACTION_CYCLE_SCALE = 0;
 
     private GGVm ggvm;
     private StretchViewport overlayViewPort;
@@ -45,6 +49,8 @@ public class TouchInputProcessor extends InputProcessorBase {
     private Texture abTexture;
 
     private float scale = 1f;
+
+    private boolean recreateButtons = false;
 
     private List<List<RectangleToButtonIndices>> rectangleToButtonIndicesList
             = new ArrayList<List<RectangleToButtonIndices>>();
@@ -63,6 +69,8 @@ public class TouchInputProcessor extends InputProcessorBase {
         public List<Integer> buttonIndices = new ArrayList<Integer>();
 
         public Set<Integer> pointerSet = new HashSet<Integer>();
+
+        public List<Integer> actions = new ArrayList<Integer>();
     }
 
     public TouchInputProcessor() {
@@ -103,7 +111,7 @@ public class TouchInputProcessor extends InputProcessorBase {
     public void render(SpriteBatch spriteBatch) {
         overlayViewPort.apply();
         drawTextures(spriteBatch);
-        //drawRectangles();
+        drawRectangles();
     }
 
     @Override
@@ -127,6 +135,7 @@ public class TouchInputProcessor extends InputProcessorBase {
         drawCenteredTexture(spriteBatch, dpadTexture, DPAD_X * scale, DPAD_Y * scale, 100 * scale, 100 * scale);
         drawCenteredTexture(spriteBatch, ssTexture, SELECT_X * scale, SELECT_Y * scale, 40 * scale, 20 * scale);
         drawCenteredTexture(spriteBatch, ssTexture, 424 + START_X * scale, START_Y * scale, 40 * scale, 20 * scale);
+        drawCenteredTexture(spriteBatch, ssTexture, SIZE_TOGGLE_X , 240 + SIZE_TOGGLE_Y , 40, 20);
         drawCenteredTexture(spriteBatch, abTexture, 424 + A_X * scale, A_Y * scale, 40 * scale, 40 * scale);
         drawCenteredTexture(spriteBatch, abTexture, 424 + B_X * scale, B_Y * scale, 40 * scale, 40 * scale);
         spriteBatch.end();
@@ -150,34 +159,40 @@ public class TouchInputProcessor extends InputProcessorBase {
 
     private void initializeTouchRectangles() {
         addDpad(DPAD_X * scale, DPAD_Y * scale, 35 * scale);
-        addButton(424 + A_X * scale, A_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.A.ordinal()));
-        addButton(424 + B_X * scale, B_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.B.ordinal()));
-        addButton(424 + START_X * scale, START_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.START.ordinal()));
-        addButton(SELECT_X * scale, SELECT_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.SELECT.ordinal()));
+        addButton(424 + A_X * scale, A_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.A.ordinal()), new ArrayList<Integer>());
+        addButton(424 + B_X * scale, B_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.B.ordinal()), new ArrayList<Integer>());
+        addButton(424 + START_X * scale, START_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.START.ordinal()), new ArrayList<Integer>());
+        addButton(SELECT_X * scale, SELECT_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.SELECT.ordinal()), new ArrayList<Integer>());
+
+        addButton(SIZE_TOGGLE_X, 240 + SIZE_TOGGLE_Y, 20, 10, new ArrayList<Integer>(), Arrays.asList(ACTION_CYCLE_SCALE));
     }
 
     private void addDpad(float centerX, float centerY, float radius) {
-        addButton(centerX - radius, centerY, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal()));
-        addButton(centerX + radius, centerY, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal()));
-        addButton(centerX, centerY + radius, radius / 2, Arrays.asList(Controller.Buttons.UP.ordinal()));
-        addButton(centerX, centerY - radius, radius / 2, Arrays.asList(Controller.Buttons.DOWN.ordinal()));
+        float dpadButtonScale = 2.2f;
+        addButton(centerX - radius, centerY, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.LEFT.ordinal()), new ArrayList<Integer>());
+        addButton(centerX + radius, centerY, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.RIGHT.ordinal()), new ArrayList<Integer>());
+        addButton(centerX, centerY + radius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.UP.ordinal()), new ArrayList<Integer>());
+        addButton(centerX, centerY - radius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.DOWN.ordinal()), new ArrayList<Integer>());
 
-        float diagonalRadius = radius - 8;
-        addButton(centerX - diagonalRadius, centerY - diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.DOWN.ordinal()));
-        addButton(centerX - diagonalRadius, centerY + diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.UP.ordinal()));
-        addButton(centerX + diagonalRadius, centerY - diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.DOWN.ordinal()));
-        addButton(centerX + diagonalRadius, centerY + diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.UP.ordinal()));
+        float diagonalRadius = radius - (8 * scale);
+        addButton(centerX - diagonalRadius, centerY - diagonalRadius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.DOWN.ordinal()), new ArrayList<Integer>());
+        addButton(centerX - diagonalRadius, centerY + diagonalRadius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.UP.ordinal()), new ArrayList<Integer>());
+        addButton(centerX + diagonalRadius, centerY - diagonalRadius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.DOWN.ordinal()), new ArrayList<Integer>());
+        addButton(centerX + diagonalRadius, centerY + diagonalRadius, radius / dpadButtonScale, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.UP.ordinal()), new ArrayList<Integer>());
     }
 
-    private void addButton(float centerX, float centerY, float radius, List<Integer> buttonIndices) {
-        addButton(centerX, centerY, radius, radius, buttonIndices);
+    private void addButton(float centerX, float centerY, float radius, List<Integer> buttonIndices, List<Integer> actions) {
+        addButton(centerX, centerY, radius, radius, buttonIndices, actions);
     }
 
-    private void addButton(float centerX, float centerY, float radiusX, float radiusY, List<Integer> buttonIndices) {
+    private void addButton(float centerX, float centerY, float radiusX, float radiusY, List<Integer> buttonIndices, List<Integer> actions) {
         RectangleToButtonIndices rectangleToButtonIndices = new RectangleToButtonIndices();
         rectangleToButtonIndices.rectangle = new Rectangle(centerX - radiusX, centerY - radiusY, radiusX * 2, radiusY * 2);
         for(Integer buttonIndex: buttonIndices) {
             rectangleToButtonIndices.buttonIndices.add(buttonIndex);
+        }
+        for (Integer action: actions) {
+            rectangleToButtonIndices.actions.add(action);
         }
         for(int i = 0; i < MAX_TOUCHES; i++) {
             rectangleToButtonIndicesList.get(i).add(rectangleToButtonIndices);
@@ -241,6 +256,24 @@ public class TouchInputProcessor extends InputProcessorBase {
                     ggvm.setButtonState(buttonIndex, true);
                 }
             }
+            for (Integer action: rectangleToButtonIndices.actions) {
+                boolean pointersPresentOnThisRect = rectangleToButtonIndices.pointerSet.size() > 0;
+                if (pointersPresentOnThisRect) {
+                    if (action == ACTION_CYCLE_SCALE) {
+                        if (scale == 1.0f) scale = .75f;
+                        else if (scale == .75f) scale = .5f;
+                        else if (scale == .5f) scale = 1f;
+                        recreateButtons = true;
+                    }
+                }
+            }
+        }
+
+        if (recreateButtons) {
+            rectangleToButtonIndicesList.clear();
+            initializeRectangleToButtonIndicesList();
+            initializeTouchRectangles();
+            recreateButtons = false;
         }
     }
 }
