@@ -29,11 +29,11 @@ public class TouchInputProcessor extends InputProcessorBase {
     private static final int DPAD_Y = 120;
     private static final int SELECT_X = 90;
     private static final int SELECT_Y = 20;
-    private static final int START_X = 424 - 90;
+    private static final int START_X = -90;
     private static final int START_Y = 20;
-    private static final int A_X = 380;
+    private static final int A_X = -44;
     private static final int A_Y = 130;
-    private static final int B_X = 380;
+    private static final int B_X = -44;
     private static final int B_Y = 80;
 
     private GGVm ggvm;
@@ -43,6 +43,8 @@ public class TouchInputProcessor extends InputProcessorBase {
     private Texture dpadTexture;
     private Texture ssTexture;
     private Texture abTexture;
+
+    private float scale = 1f;
 
     private List<List<RectangleToButtonIndices>> rectangleToButtonIndicesList
             = new ArrayList<List<RectangleToButtonIndices>>();
@@ -101,6 +103,7 @@ public class TouchInputProcessor extends InputProcessorBase {
     public void render(SpriteBatch spriteBatch) {
         overlayViewPort.apply();
         drawTextures(spriteBatch);
+        //drawRectangles();
     }
 
     @Override
@@ -121,16 +124,16 @@ public class TouchInputProcessor extends InputProcessorBase {
     private void drawTextures(SpriteBatch spriteBatch) {
         spriteBatch.setProjectionMatrix(overlayCamera.combined);
         spriteBatch.begin();
-        drawCenteredTexture(spriteBatch, dpadTexture, DPAD_X, DPAD_Y, 100, 100);
-        drawCenteredTexture(spriteBatch, ssTexture, SELECT_X, SELECT_Y, 40, 20);
-        drawCenteredTexture(spriteBatch, ssTexture, START_X, START_Y, 40, 20);
-        drawCenteredTexture(spriteBatch, abTexture, A_X, A_Y, 40, 40);
-        drawCenteredTexture(spriteBatch, abTexture, B_X, B_Y, 40, 40);
+        drawCenteredTexture(spriteBatch, dpadTexture, DPAD_X * scale, DPAD_Y * scale, 100 * scale, 100 * scale);
+        drawCenteredTexture(spriteBatch, ssTexture, SELECT_X * scale, SELECT_Y * scale, 40 * scale, 20 * scale);
+        drawCenteredTexture(spriteBatch, ssTexture, 424 + START_X * scale, START_Y * scale, 40 * scale, 20 * scale);
+        drawCenteredTexture(spriteBatch, abTexture, 424 + A_X * scale, A_Y * scale, 40 * scale, 40 * scale);
+        drawCenteredTexture(spriteBatch, abTexture, 424 + B_X * scale, B_Y * scale, 40 * scale, 40 * scale);
         spriteBatch.end();
     }
 
-    private void drawCenteredTexture(SpriteBatch spriteBatch, Texture texture, int x, int y, int w, int h) {
-        spriteBatch.draw(texture, x - w/2, y - h/2, w, h);
+    private void drawCenteredTexture(SpriteBatch spriteBatch, Texture texture, float x, float y, float w, float h) {
+        spriteBatch.draw(texture, (x - w/2), (y - h/2), w, h);
     }
 
     private void initializeRectangleToButtonIndicesList() {
@@ -146,31 +149,31 @@ public class TouchInputProcessor extends InputProcessorBase {
     }
 
     private void initializeTouchRectangles() {
-        addDpad(DPAD_X, DPAD_Y, 35);
-        addButton(A_X, A_Y, 20, Arrays.asList(Controller.Buttons.A.ordinal()));
-        addButton(B_X, B_Y, 20, Arrays.asList(Controller.Buttons.B.ordinal()));
-        addButton(START_X, START_Y, 20, 10, Arrays.asList(Controller.Buttons.START.ordinal()));
-        addButton(SELECT_X, SELECT_Y, 20, 10, Arrays.asList(Controller.Buttons.SELECT.ordinal()));
+        addDpad(DPAD_X * scale, DPAD_Y * scale, 35 * scale);
+        addButton(424 + A_X * scale, A_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.A.ordinal()));
+        addButton(424 + B_X * scale, B_Y * scale, 20 * scale, Arrays.asList(Controller.Buttons.B.ordinal()));
+        addButton(424 + START_X * scale, START_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.START.ordinal()));
+        addButton(SELECT_X * scale, SELECT_Y * scale, 20 * scale, 10 * scale, Arrays.asList(Controller.Buttons.SELECT.ordinal()));
     }
 
-    private void addDpad(int centerX, int centerY, int radius) {
+    private void addDpad(float centerX, float centerY, float radius) {
         addButton(centerX - radius, centerY, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal()));
         addButton(centerX + radius, centerY, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal()));
         addButton(centerX, centerY + radius, radius / 2, Arrays.asList(Controller.Buttons.UP.ordinal()));
         addButton(centerX, centerY - radius, radius / 2, Arrays.asList(Controller.Buttons.DOWN.ordinal()));
 
-        int diagonalRadius = radius - 8;
+        float diagonalRadius = radius - 8;
         addButton(centerX - diagonalRadius, centerY - diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.DOWN.ordinal()));
         addButton(centerX - diagonalRadius, centerY + diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.LEFT.ordinal(), Controller.Buttons.UP.ordinal()));
         addButton(centerX + diagonalRadius, centerY - diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.DOWN.ordinal()));
         addButton(centerX + diagonalRadius, centerY + diagonalRadius, radius / 2, Arrays.asList(Controller.Buttons.RIGHT.ordinal(), Controller.Buttons.UP.ordinal()));
     }
 
-    private void addButton(int centerX, int centerY, int radius, List<Integer> buttonIndices) {
+    private void addButton(float centerX, float centerY, float radius, List<Integer> buttonIndices) {
         addButton(centerX, centerY, radius, radius, buttonIndices);
     }
 
-    private void addButton(int centerX, int centerY, int radiusX, int radiusY, List<Integer> buttonIndices) {
+    private void addButton(float centerX, float centerY, float radiusX, float radiusY, List<Integer> buttonIndices) {
         RectangleToButtonIndices rectangleToButtonIndices = new RectangleToButtonIndices();
         rectangleToButtonIndices.rectangle = new Rectangle(centerX - radiusX, centerY - radiusY, radiusX * 2, radiusY * 2);
         for(Integer buttonIndex: buttonIndices) {
