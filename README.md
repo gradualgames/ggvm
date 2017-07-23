@@ -633,6 +633,24 @@ $5603 - Write a byte of any value to resume current music.
 
 $5604 - Write a byte of any value to stop all music.
 
+### Hide/Show Mobile Buttons register
+
+Address: $5700
+
+A hardware register installed by TouchInputProcessor on mobile devices. A game
+ROM may write to location 0x5700 to hide or show the dpad, select, start, a and
+b buttons, according to this bit mask:
+        |-----dpad
+        ||----select button
+        |||---start button
+        ||||--b button
+        |||||-a button
+    %xxx00000
+bit: 76543210
+A bit set to '1' means HIDE. A bit set to '0' means SHOW. So if you do nothing,
+all the buttons will be showing by default, assuming your game is not writing
+to address $5700 for any other purpose.
+
 # Instructions for Creating a Custom SoundtrackManager
 
 Note that creating your own custom SoundtrackManager is no longer

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.gradualgames.ggvm.Controller;
 import com.gradualgames.ggvm.GGVm;
+import com.gradualgames.ggvm.GGVmRegisterHideMobileButtons;
 
 import java.util.*;
 
@@ -41,6 +42,7 @@ public class TouchInputProcessor extends InputProcessorBase {
     private static final int ACTION_CYCLE_SCALE = 0;
 
     private GGVm ggvm;
+    private GGVmRegisterHideMobileButtons ggVmRegisterHideMobileButtons = new GGVmRegisterHideMobileButtons();
     private StretchViewport overlayViewPort;
     private Camera overlayCamera;
     private ShapeRenderer shapeRenderer;
@@ -82,6 +84,7 @@ public class TouchInputProcessor extends InputProcessorBase {
     @Override
     public void setGGVm(GGVm ggvm) {
         this.ggvm = ggvm;
+        ggvm.installReadWriteRange(ggVmRegisterHideMobileButtons);
     }
 
     public void setDPadFileName(String dPadFileName) {
@@ -132,12 +135,22 @@ public class TouchInputProcessor extends InputProcessorBase {
     private void drawTextures(SpriteBatch spriteBatch) {
         spriteBatch.setProjectionMatrix(overlayCamera.combined);
         spriteBatch.begin();
-        drawCenteredTexture(spriteBatch, dpadTexture, DPAD_X * scale, DPAD_Y * scale, 100 * scale, 100 * scale);
-        drawCenteredTexture(spriteBatch, ssTexture, SELECT_X * scale, SELECT_Y * scale, 40 * scale, 20 * scale);
-        drawCenteredTexture(spriteBatch, ssTexture, 424 + START_X * scale, START_Y * scale, 40 * scale, 20 * scale);
+        if (!ggVmRegisterHideMobileButtons.getHideDPad()) {
+            drawCenteredTexture(spriteBatch, dpadTexture, DPAD_X * scale, DPAD_Y * scale, 100 * scale, 100 * scale);
+        }
+        if (!ggVmRegisterHideMobileButtons.getHideSelect()) {
+            drawCenteredTexture(spriteBatch, ssTexture, SELECT_X * scale, SELECT_Y * scale, 40 * scale, 20 * scale);
+        }
+        if (!ggVmRegisterHideMobileButtons.getHideStart()) {
+            drawCenteredTexture(spriteBatch, ssTexture, 424 + START_X * scale, START_Y * scale, 40 * scale, 20 * scale);
+        }
         drawCenteredTexture(spriteBatch, ssTexture, SIZE_TOGGLE_X , 240 + SIZE_TOGGLE_Y , 40, 20);
-        drawCenteredTexture(spriteBatch, abTexture, 424 + A_X * scale, A_Y * scale, 40 * scale, 40 * scale);
-        drawCenteredTexture(spriteBatch, abTexture, 424 + B_X * scale, B_Y * scale, 40 * scale, 40 * scale);
+        if (!ggVmRegisterHideMobileButtons.getHideA()) {
+            drawCenteredTexture(spriteBatch, abTexture, 424 + A_X * scale, A_Y * scale, 40 * scale, 40 * scale);
+        }
+        if (!ggVmRegisterHideMobileButtons.getHideB()) {
+            drawCenteredTexture(spriteBatch, abTexture, 424 + B_X * scale, B_Y * scale, 40 * scale, 40 * scale);
+        }
         spriteBatch.end();
     }
 
