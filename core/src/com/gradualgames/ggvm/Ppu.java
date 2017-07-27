@@ -1,5 +1,7 @@
 package com.gradualgames.ggvm;
 
+import com.badlogic.gdx.Gdx;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,8 @@ public class Ppu implements ReadWriteRangeProvider {
     private Ppu2007 ppu2007 = new Ppu2007();
 
     private List<ReadWriteRange> registers = new ArrayList<ReadWriteRange>();
+
+    private boolean vramAddressLatch = true;
 
     public Ppu(PpuBus ppuBus) {
         this.ppuBus = ppuBus;
@@ -251,8 +255,7 @@ public class Ppu implements ReadWriteRangeProvider {
         public byte read(int address) {
             int result = status;
             status = status & (~PPU_STATUS_IN_VBLANK);
-            ppu2005.writeX = true;
-            ppu2006.writeHi = true;
+            vramAddressLatch = true;
             return (byte) result;
         }
 
@@ -284,9 +287,8 @@ public class Ppu implements ReadWriteRangeProvider {
 
     private class Ppu2005 implements ReadWriteRange {
 
-        private int x;
-        private int y;
-        private boolean writeX = true;
+        public int x;
+        public int y;
 
         @Override
         public byte read(int address) {
@@ -295,12 +297,12 @@ public class Ppu implements ReadWriteRangeProvider {
 
         @Override
         public void write(int address, byte value) {
-            if (writeX) {
+            if (vramAddressLatch) {
                 x = value & 0xff;
             } else {
                 y = value & 0xff;
             }
-            writeX = !writeX;
+            vramAddressLatch = !vramAddressLatch;
         }
 
         @Override
@@ -317,14 +319,14 @@ public class Ppu implements ReadWriteRangeProvider {
         public void save(OutputStream outputStream) throws IOException {
             outputStream.write(x);
             outputStream.write(y);
-            outputStream.write(writeX ? 1: 0);
+            outputStream.write(vramAddressLatch ? 1: 0);
         }
 
         @Override
         public void load(InputStream inputStream) throws IOException {
             x = inputStream.read();
             y = inputStream.read();
-            writeX = inputStream.read() == 1 ? true : false;
+            vramAddressLatch = inputStream.read() == 1 ? true : false;
         }
     }
 
@@ -334,7 +336,6 @@ public class Ppu implements ReadWriteRangeProvider {
         private int hi;
         private int vramAddress;
         private int nameTableAddress;
-        private boolean writeHi = true;
 
         public int getVramAddress() {
             return vramAddress;
@@ -355,13 +356,13 @@ public class Ppu implements ReadWriteRangeProvider {
 
         @Override
         public void write(int address, byte value) {
-            if (writeHi) {
+            if (vramAddressLatch) {
                 hi = value & 0xff;
             } else {
                 lo = value & 0xff;
             }
             vramAddress = (hi << 8) | lo;
-            writeHi = !writeHi;
+            vramAddressLatch = !vramAddressLatch;
             if (vramAddress == Ppu.NAME_TABLE_0_BASE_ADDRESS ||
                 vramAddress == Ppu.NAME_TABLE_1_BASE_ADDRESS ||
                 vramAddress == Ppu.NAME_TABLE_2_BASE_ADDRESS ||
@@ -369,6 +370,8 @@ public class Ppu implements ReadWriteRangeProvider {
                 nameTableAddress = vramAddress;
             }
             ppu2007.readEnabled = false;
+            ppu2005.x = 0;
+            ppu2005.y = 0;
         }
 
         @Override
@@ -386,7 +389,7 @@ public class Ppu implements ReadWriteRangeProvider {
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             dataOutputStream.write(lo);
             dataOutputStream.write(hi);
-            dataOutputStream.writeBoolean(writeHi);
+            dataOutputStream.writeBoolean(vramAddressLatch);
             dataOutputStream.writeInt(vramAddress);
             dataOutputStream.writeInt(nameTableAddress);
         }
@@ -396,7 +399,7 @@ public class Ppu implements ReadWriteRangeProvider {
             DataInputStream dataInputStream = new DataInputStream(inputStream);
             lo = dataInputStream.read();
             hi = dataInputStream.read();
-            writeHi = dataInputStream.readBoolean();
+            vramAddressLatch = dataInputStream.readBoolean();
             vramAddress = dataInputStream.readInt();
             nameTableAddress = dataInputStream.readInt();
         }
