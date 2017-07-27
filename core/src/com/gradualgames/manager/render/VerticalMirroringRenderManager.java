@@ -58,7 +58,7 @@ public class VerticalMirroringRenderManager extends RenderManager {
             screenX = 0;
             nameTableColumnCount = fineScrollX == 0 ? 32 : 33;
             nameTableX = coarseScrollX;
-            nameTable = (startingNametableAddress == Ppu.NAME_TABLE_0_BASE_ADDRESS) ? 0 : 1;
+            nameTable = (startingNametableAddress == Ppu.NAME_TABLE_0_BASE_ADDRESS || startingNametableAddress == Ppu.NAME_TABLE_2_BASE_ADDRESS) ? 0 : 1;
             while (nameTableColumnCount > 0) {
                 actualNameTableX = nameTableX % 32;
                 actualNameTableY = nameTableY % 30;

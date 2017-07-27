@@ -1,6 +1,7 @@
 package com.gradualgames.ggvm;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,10 @@ public class Mapper2 implements ReadWriteRangeProvider {
     private UnromSwitchboard unromSwitchboard;
     private Rom fixedRom;
     private Ram chrRam;
-    private List<Ram> nameTableRams = new ArrayList<Ram>();
+    private List<ReadWriteRange> nameTableRams = new ArrayList<ReadWriteRange>();
     private Ram paletteRam;
 
-    private Mapper2(UnromSwitchboard unromSwitchboard, Rom fixedRom, Ram chrRam, List<Ram> nameTableRams, Ram paletteRam) {
+    private Mapper2(UnromSwitchboard unromSwitchboard, Rom fixedRom, Ram chrRam, List<ReadWriteRange> nameTableRams, Ram paletteRam) {
         this.unromSwitchboard = unromSwitchboard;
         this.fixedRom = fixedRom;
         this.chrRam = chrRam;
@@ -62,16 +63,23 @@ public class Mapper2 implements ReadWriteRangeProvider {
         Ram chrRam = new Ram(Mapper2.MAPPER_2_CHR_RAM_BASE_ADDRESS, Mapper2.MAPPER_2_CHR_RAM_SIZE);
 
         //Configure PPU ram
-        List<Ram> nameTableRams = new ArrayList<Ram>();
+        List<ReadWriteRange> nameTableRams = new ArrayList<ReadWriteRange>();
         switch(cartridge.getMirroringMode()) {
             case Cartridge.MIRRORING_MODE_HORIZONTAL:
                 nameTableRams.add(new Ram(Ppu.NAME_TABLE_0_BASE_ADDRESS, Ppu.NAMETABLE_RAM_SIZE));
                 nameTableRams.add(new Ram(Ppu.NAME_TABLE_2_BASE_ADDRESS, Ppu.NAMETABLE_RAM_SIZE));
                 break;
             case Cartridge.MIRRORING_MODE_VERTICAL:
-                //We configure vertical mirroring ram as one contiguous chunk to support
-                //legacy state.sav files prior to supporting additional mirroring modes.
-                nameTableRams.add(new Ram(Ppu.NAME_TABLE_0_BASE_ADDRESS, Ppu.NAMETABLE_RAM_SIZE * 2));
+                //VerticalMirroringRam was added to support games which write to the
+                //mirrored ranges of vram. Previously, all games reliably were writing only
+                //to the ranges of the base addresses of both nametables for their respective
+                //mirroring modes. This class is backwards compatible with the previous code which
+                //was just one contiguous chunk of ram for $2000 and $2400. This class allocates
+                //precisely the same amount of bytes as the previous approach, the only difference
+                //is it maps itself over the full range of nametable addresses, and mirrors any
+                //read or write past $2800 back to $2000 and $2400.
+                VerticalMirroringRam ram = new VerticalMirroringRam();
+                nameTableRams.add(ram);
                 break;
         }
         Ram paletteRam = new Ram(Ppu.BG_PALETTE_BASE_ADDRESS, Ppu.PALETTE_RAM_SIZE);
