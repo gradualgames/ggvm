@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -128,7 +129,10 @@ public abstract class RenderManager {
         transparentMaskSprite = new Sprite(transparentMaskTexture);
 
         //Initialize main frame buffer
-        mainFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 256, 240, false);
+        FrameBuffer.FrameBufferBuilder frameBufferBuilder = new FrameBuffer.FrameBufferBuilder(256, 240);
+        frameBufferBuilder.addBasicColorTextureAttachment(Pixmap.Format.RGBA8888);
+        mainFrameBuffer = frameBufferBuilder.build();
+
         mainTextureRegion = new TextureRegion(mainFrameBuffer.getColorBufferTexture(), 0, 0,
                 256, 240);
         mainTextureRegion.flip(false, true);
@@ -136,7 +140,7 @@ public abstract class RenderManager {
 
         //Initialize special frame buffer for foreground sprites so
         //we can hide them with fake background sprites
-        foregroundSpritesFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 256, 240, false);
+        foregroundSpritesFrameBuffer = frameBufferBuilder.build();
         foregroundSpritesTextureRegion = new TextureRegion(foregroundSpritesFrameBuffer.getColorBufferTexture(), 0, 0,
                 256, 240);
         foregroundSpritesTextureRegion.flip(false, true);

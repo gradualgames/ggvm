@@ -19,7 +19,7 @@ allprojects {
     version = '1.2'
     ext {
         appName = "GGVm"
-        gdxVersion = '1.9.6'
+        gdxVersion = '1.9.7'
         roboVMVersion = '2.3.0'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
