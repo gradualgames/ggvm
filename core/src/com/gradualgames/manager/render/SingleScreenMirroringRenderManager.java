@@ -26,6 +26,12 @@ public class SingleScreenMirroringRenderManager extends RenderManager {
     private void drawNametable(GGVm ggvm, SpriteBatch spriteBatch, int scrollX, int scrollY, float splitYStart, float splitYEnd) {
         int patternTable = ggvm.getBackgroundPatternTableAddress() == 0 ? 0 : 1;
 
+        boolean toggleNametableEarly = false;
+        if (scrollY > 239 && scrollY <= 255) {
+            scrollY -= 16;
+            toggleNametableEarly = true;
+        }
+
         int coarseScrollX = scrollX >> 3;
         int coarseScrollY = scrollY >> 3;
         int fineScrollX = scrollX & 7;
@@ -46,6 +52,9 @@ public class SingleScreenMirroringRenderManager extends RenderManager {
             nameTableRowCount = fineScrollY == 0 ? 30 : 31;
             nameTableY = coarseScrollY;
             nameTable = (ggvm.getNametableAddress() == Ppu.NAME_TABLE_0_BASE_ADDRESS) ? 0 : 1;
+            if (toggleNametableEarly) {
+                nameTable ^= 1;
+            }
             while (nameTableRowCount > 0) {
                 actualNameTableX = nameTableX % 32;
                 actualNameTableY = nameTableY % 30;
