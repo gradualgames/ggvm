@@ -1,123 +1,49 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.6
+sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs = ["../assets"]
 
-project.ext.mainClassName = "com.gradualgames.ggvm.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets");
+project.ext.mainClassName = "com.gradualgames.ggvm.DesktopLauncher"
+project.ext.assetsDir = new File("../assets")
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def game = properties.getProperty('game')
-def gameArchive = game.toLowerCase() + "-" + version
-def jdk = properties.getProperty('jdk')
-def packr = properties.getProperty('packr')
-def resourceHacker = properties.getProperty('resourceHacker')
-def platform = properties.getProperty('platform')
+import org.gradle.internal.os.OperatingSystem
 
-task deleteFiles {
-    delete "../desktop/src/com/gradualgames/ggvm/desktop/GameModuleProvider.java"
-    FileTree tree = fileTree(dir: '../android/assets/')
-    tree.exclude '**/font*'
-    tree.exclude '**/palette*'
-    tree.exclude '**/shaders*'
-    tree.exclude '**/gamepad*'
-    tree.exclude 'state.sav'
-    delete tree
-    tree.visit { FileVisitDetails details ->
-        if (details.file.isDirectory() &&
-                details.file.name != "font" &&
-                details.file.name != "palette" &&
-                details.file.name != "shaders" &&
-                details.file.name != "gamepad") {
-            delete details.file.path
-        }
-    }
-}
-
-task copyFiles(type: Copy) {
-    from "../assets/" + game.toLowerCase()
-    into "../android/assets/" + game.toLowerCase()
-    exclude '**/src/**'
-}
-
-task generateSources() {
-    def gameModule = game + "GameModule"
-    def outputDir = file("$projectDir/src/com/gradualgames/ggvm/desktop")
-    def outputFile = new File(outputDir, "GameModuleProvider.java")
-    outputs.dir outputDir
-    outputs.upToDateWhen { outputFile.exists() }
-    doFirst {
-        outputDir.exists() || outputDir.mkdirs()
-        String GAME_MODULE = "public static GameModule provideGameModule() { return new " + gameModule + "(); }";
-        outputFile.write("package com.gradualgames.ggvm.desktop;import com.gradualgames.module.GameModule;import com.gradualgames.module." + gameModule + ";\n\npublic class GameModuleProvider {\n" + "    " + GAME_MODULE + "}")
-    }
-}
-
-compileJava.dependsOn generateSources
-classes.dependsOn copyFiles
-
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
+tasks.register('run', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
     ignoreExitValue = true
+
+    if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+        // Required to run on macOS
+        jvmArgs += "-XstartOnFirstThread"
+    }
 }
 
-task dist(dependsOn: classes, type: Jar) {
-    from files(sourceSets.main.output.classesDir)
-    from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
+tasks.register('debug', JavaExec) {
+    dependsOn classes
+    mainClass = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    ignoreExitValue = true
+    debug = true
+}
 
+tasks.register('dist', Jar) {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
-        archiveName = gameArchive + ".jar"
         attributes 'Main-Class': project.mainClassName
     }
-}
-
-task distProguard(dependsOn: dist, type: proguard.gradle.ProGuardTask) {
-    def javaHome = System.properties.'java.home'
-    configuration files("proguard-project.txt")
-    libraryjars files(javaHome + "/lib/rt.jar", javaHome + "/lib/jce.jar")
-    injars files("build/libs/" + gameArchive + ".jar")
-    outjars files("build/libs/" + gameArchive + "-pg.jar")
-}
-
-task distPackr(dependsOn: dist, type: JavaExec) {
-    classpath files(packr)
-    main "com.badlogicgames.packr.Packr"
-    args "--platform", platform
-    args "--jdk", jdk
-    args "--executable", gameArchive
-    args "--classpath", "build/libs/" + gameArchive + ".jar"
-    args "--mainclass", "com.gradualgames.ggvm.desktop.DesktopLauncher"
-    args "--vmargs", "Xmx128m"
-    args "--minimizejre", "soft"
-    args "--output", "build/" + game.toLowerCase() + "-" + platform
-}
-
-task distPackrIcon(dependsOn: distPackr, type: Exec) {
-    def gameExe = "build/" + game.toLowerCase() + "-" + platform + "/" + gameArchive + ".exe"
-    def iconFile = "../android/assets/" + game + "/icon/icon.ico"
-    commandLine resourceHacker, "-open", gameExe, "-save", gameExe, "-resource", iconFile, "-action", "add", "-mask", "ICONGROUP,MAINICON,"
-}
-
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/android/assets'
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    with jar
 }
 
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
-}
+
+dist.dependsOn classes
+
+eclipse.project.name = appName + "-desktop"

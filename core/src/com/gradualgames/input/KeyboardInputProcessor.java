@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.controllers.PovDirection;
+//import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.utils.Array;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -328,67 +328,67 @@ public class KeyboardInputProcessor extends InputProcessorBase {
         return false;
     }
 
-    @Override
-    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-        //Only use d-pad if axes are not configured
-        if (actualAxisToAxisCode.isEmpty()) {
-            switch (value) {
-                case center:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case north:
-                    ggvm.setUpButtonState(true);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case northEast:
-                    ggvm.setUpButtonState(true);
-                    ggvm.setRightButtonState(true);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case east:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(true);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case southEast:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(true);
-                    ggvm.setDownButtonState(true);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case south:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(true);
-                    ggvm.setLeftButtonState(false);
-                    break;
-                case southWest:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(true);
-                    ggvm.setLeftButtonState(true);
-                    break;
-                case west:
-                    ggvm.setUpButtonState(false);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(true);
-                    break;
-                case northWest:
-                    ggvm.setUpButtonState(true);
-                    ggvm.setRightButtonState(false);
-                    ggvm.setDownButtonState(false);
-                    ggvm.setLeftButtonState(true);
-                    break;
-            }
-        }
-        return false;
-    }
+//    @Override
+//    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+//        //Only use d-pad if axes are not configured
+//        if (actualAxisToAxisCode.isEmpty()) {
+//            switch (value) {
+//                case center:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case north:
+//                    ggvm.setUpButtonState(true);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case northEast:
+//                    ggvm.setUpButtonState(true);
+//                    ggvm.setRightButtonState(true);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case east:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(true);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case southEast:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(true);
+//                    ggvm.setDownButtonState(true);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case south:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(true);
+//                    ggvm.setLeftButtonState(false);
+//                    break;
+//                case southWest:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(true);
+//                    ggvm.setLeftButtonState(true);
+//                    break;
+//                case west:
+//                    ggvm.setUpButtonState(false);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(true);
+//                    break;
+//                case northWest:
+//                    ggvm.setUpButtonState(true);
+//                    ggvm.setRightButtonState(false);
+//                    ggvm.setDownButtonState(false);
+//                    ggvm.setLeftButtonState(true);
+//                    break;
+//            }
+//        }
+//        return false;
+//    }
 }
