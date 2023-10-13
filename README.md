@@ -11,10 +11,8 @@ to be too cumbersome and limited to be useful. So, I fixed it up
 for pure curiosity's sake so that it is now a functional museum item
 on my GitHub page.
 
-GGVm supports a subset of the NES's full capabilities. This
-enabled us to complete the project quickly enough to return
-to creating homebrew games. In addition, this allowed us to
-take large shortcuts in how the system is emulated, which
+GGVm supports a subset of the NES's full capabilities. This allowed for
+large shortcuts in how the system is emulated, which
 enables games to run smoothly at 60 fps with little or no
 stuttering even on somewhat old Android devices. While it does
 run on Android phones it is a battery hog, so it is not recommended
