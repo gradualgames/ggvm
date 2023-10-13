@@ -237,30 +237,6 @@ To package up the currently configured game in a jar, type:
 
 ./gradlew desktop:dist
 
-To package up the currently configured game with a JRE for
-distribution, type:
-
-./gradlew desktop:distPackr
-
-Note that using this task requires the packr utility, and a
-JDK zip file to be present on the file system and configured
-using local.properties.
-
-To package up the currently configured game with a JRE AND
-modify the resulting exe to include an icon, type:
-
-./gradlew desktop:distPackrIcon
-
-The icon will be obtained from the game's assets directory under
-a folder called icon, and it will look for a file called
-icon.ico. Note that the demo game, Dushlan, currently does not
-have an icon included. Note also that this task requires
-resourcehacker.exe to be installed, and only works on Windows
-machines at the moment.
-
-distPackrIcon is what typically will be used for a full Windows
-PC release, say for Steam.
-
 # Building a Game for Android
 
 To run the currently configured game (see [Setting up local.properties](#setting-up-localproperties)) on Android, type:
