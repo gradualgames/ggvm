@@ -56,12 +56,6 @@ public class KeyboardInputProcessor extends InputProcessorBase {
     public static final int XBOX_360_BACK = 6;
     public static final int XBOX_360_START = 7;
 
-    public static final String RETRO_USB_NAME = "Retr";
-    public static final int RETRO_USB_A = 1;
-    public static final int RETRO_USB_B = 0;
-    public static final int RETRO_USB_SELECT = 2;
-    public static final int RETRO_USB_START = 3;
-
     private BiMap<com.gradualgames.ggvm.Controller.Buttons, Integer> buttonIndexToKeyCode = HashBiMap.create();
     private BiMap<com.gradualgames.ggvm.Controller.Buttons, Integer> buttonIndexToButton = HashBiMap.create();
     private BiMap<Axis, Integer> actualAxisToAxisCode = HashBiMap.create();
@@ -166,22 +160,6 @@ public class KeyboardInputProcessor extends InputProcessorBase {
 
     public void autoConfigure() {
         Array<Controller> controllers = Controllers.getControllers();
-        if (controllers.size > 0) {
-            Controller controller = controllers.get(0);
-            if (isXbox360Controller(controller.getName())) {
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.A, XBOX_360_A);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.B, XBOX_360_X);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.SELECT, XBOX_360_LEFT_SHOULDER);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.START, XBOX_360_START);
-            } else if (controller.getName().equals(RETRO_USB_NAME)) {
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.A, RETRO_USB_A);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.B, RETRO_USB_B);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.SELECT, RETRO_USB_SELECT);
-                buttonIndexToButton.put(com.gradualgames.ggvm.Controller.Buttons.START, RETRO_USB_START);
-                actualAxisToAxisCode.put(Axis.X, 1);
-                actualAxisToAxisCode.put(Axis.Y, 0);
-            }
-        }
         buttonIndexToKeyCode.put(com.gradualgames.ggvm.Controller.Buttons.A, Input.Keys.F);
         buttonIndexToKeyCode.put(com.gradualgames.ggvm.Controller.Buttons.B, Input.Keys.D);
         buttonIndexToKeyCode.put(com.gradualgames.ggvm.Controller.Buttons.SELECT, Input.Keys.A);
@@ -217,17 +195,6 @@ public class KeyboardInputProcessor extends InputProcessorBase {
                     case XBOX_360_BACK:
                         return "BACK";
                     case XBOX_360_START:
-                        return "START";
-                }
-            } else if (controller.getName().equals(RETRO_USB_NAME)) {
-                switch(button) {
-                    case RETRO_USB_A:
-                        return "A";
-                    case RETRO_USB_B:
-                        return "B";
-                    case RETRO_USB_SELECT:
-                        return "SELECT";
-                    case RETRO_USB_START:
                         return "START";
                 }
             }
@@ -327,68 +294,4 @@ public class KeyboardInputProcessor extends InputProcessorBase {
         }
         return false;
     }
-
-//    @Override
-//    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-//        //Only use d-pad if axes are not configured
-//        if (actualAxisToAxisCode.isEmpty()) {
-//            switch (value) {
-//                case center:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case north:
-//                    ggvm.setUpButtonState(true);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case northEast:
-//                    ggvm.setUpButtonState(true);
-//                    ggvm.setRightButtonState(true);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case east:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(true);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case southEast:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(true);
-//                    ggvm.setDownButtonState(true);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case south:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(true);
-//                    ggvm.setLeftButtonState(false);
-//                    break;
-//                case southWest:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(true);
-//                    ggvm.setLeftButtonState(true);
-//                    break;
-//                case west:
-//                    ggvm.setUpButtonState(false);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(true);
-//                    break;
-//                case northWest:
-//                    ggvm.setUpButtonState(true);
-//                    ggvm.setRightButtonState(false);
-//                    ggvm.setDownButtonState(false);
-//                    ggvm.setLeftButtonState(true);
-//                    break;
-//            }
-//        }
-//        return false;
-//    }
 }

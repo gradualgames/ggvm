@@ -249,9 +249,6 @@ public class PCMenu extends Menu {
                     menuOption.buttonIndex == com.gradualgames.ggvm.Controller.Buttons.RIGHT ||
                     menuOption.buttonIndex == com.gradualgames.ggvm.Controller.Buttons.UP ||
                     menuOption.buttonIndex == com.gradualgames.ggvm.Controller.Buttons.DOWN) {
-                    if (inputProcessor.getActualAxisToAxisCode().isEmpty()) {
-                        axisOrDpad = " DPAD";
-                    }
                 }
                 int offset = 64;
                 if (key.length() > 0) {
