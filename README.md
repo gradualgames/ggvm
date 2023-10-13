@@ -1,4 +1,4 @@
-# GGVm Guide
+# GGVm
 ### by Derek Andrews <gradualgames@gmail.com>
 
 # Introduction
