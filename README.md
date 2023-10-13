@@ -16,9 +16,9 @@ enabled us to complete the project quickly enough to return
 to creating homebrew games. In addition, this allowed us to
 take large shortcuts in how the system is emulated, which
 enables games to run smoothly at 60 fps with little or no
-stuttering even on somewhat old Android devices. Please
-read the feature list to get an idea of what GGVm's
-capabilities are.
+stuttering even on somewhat old Android devices. While it does
+run on Android phones it is a battery hog, so it is not recommended
+to distribute a GGVm wrapped NES game on the Play Store.
 
 The largest sacrifice of building ggvm this way is probably
 raster effects and sophisticated APU usage (it has no APU,
@@ -31,9 +31,7 @@ relatively simple needs for audio playback.
 
 # Features and Limitations
 
-- Smooth 60fps play on pc systems up to ~8 years old and on
-Android phones and tablets up to ~3 years old that I have
-tested. iOS working just as well.
+- Can play on Android phones and tablets.
 
 - No input lag added beyond latency already present in the
 controller subsystem.
